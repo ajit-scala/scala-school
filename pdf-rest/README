@@ -1,0 +1,21 @@
+This is a  Play application
+=================================
+
+
+
+Controllers
+===========
+
+- HomeController.scala:
+	uses spdf (https://github.com/ajit-scala/sPDF) to generate pdf files
+        use-xserver was fixed in code for forked project, needed to gen charts on linux based on resolution param else defaults to 800X600
+        spdf is used as jar in lib folder
+	highcharts server can still be used to create charts to svg images, and then embedded to pdf via img tags
+todo 
+use spdf from local/global repository
+generate pdf with byte stream only
+currently is saved in local file then this file to transported to client
+
+
+
+  

@@ -1,0 +1,31 @@
+A Play application
+=================================
+
+Play uses htmlUnit for creating integration tests
+e.g. execute a call to local host via htmlUnit headless browser
+then parse results in  integrationSpec to enable tests
+e.g. 
+class IntegrationSpec extends PlaySpec with OneServerPerTest with OneBrowserPerTest with HtmlUnitFactory {
+
+  "Application" should {
+
+    "work from within a browser" in {
+
+      go to ("http://localhost:" + port)
+
+      pageSource must include ("Your new application is ready.")
+    }
+  }
+}
+
+Controllers
+===========
+
+- HomeController.scala:
+
+  Shows how to handle simple html unit headless browser
+  a chart controller to gen highcharts chart locally
+Learninngs:
+ html unit retuns complete html and javascript with from a url
+ but export does not executes javascript properly so that chart is converted to html on the fly
+ page.getXml get all the xml which can then be parsed
