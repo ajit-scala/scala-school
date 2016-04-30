@@ -1,0 +1,2095 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+
+    <title>Getting started with Scala</title>
+
+    <meta name="description" content="Getting started with Scala">
+    <meta name="author" content="Heiko Seeberger">
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+    <link rel="stylesheet" href="css/reveal.css">
+    <link rel="stylesheet" href="css/theme/black.css" id="theme">
+    <link rel="stylesheet" href="css/deck.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/font-hack/2.018/css/hack.min.css">
+
+    <!-- Code syntax highlighting -->
+    <link rel="stylesheet" href="lib/css/github.css">
+
+    <!-- Printing and PDF exports -->
+    <script>
+      var link = document.createElement( 'link' );
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+      document.getElementsByTagName( 'head' )[0].appendChild( link );
+    </script>
+
+    <!--[if lt IE 9]>
+    <script src="lib/js/html5shiv.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <div class="reveal">
+
+      <!-- Any section element inside of this container is displayed as a slide -->
+      <div class="slides">
+
+<!-- ########################################################################################### -->
+<!-- START                                                                                       -->
+<!-- ########################################################################################### -->
+
+<section data-markdown data-background="images/codecentric-title-background-16x9.png"><script type="text/template">
+## Getting started with Scala
+
+Heiko Seeberger, codecentric
+
+Andreas Schroeder, codecentric
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Agenda
+
+- Introduction
+- Tooling
+- OO Basics
+- Testing
+- FP Basics
+- For-Comprehensions
+- Inheritance and Traits
+- Pattern Matching
+- Optional Values
+</script></section>
+
+<!-- ########################################################################################### -->
+<!-- Introduction                                                                                -->
+<!-- ########################################################################################### -->
+
+<section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+## Introduction
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Scala is a modern JVM Language
+
+![JVM Language](images/duke.png "JVM Language")
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Object-Oriented Meets Functional
+
+>Have the best of both worlds. Construct elegant class hierarchies for maximum code reuse and extensibility, implement their behavior using higher-order functions. Or anything in-between.
+
+<small>[scala-lang.org](http://scala-lang.org)</small>
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Scala is mature yet innovative
+
+|  |  |
+| ---- | --- |
+| 2001 | Design started |
+| 2004 | v1.0 |
+| 2006 | v2.0 – Scala compiles Scala |
+| 2011 | v2.9 – minor releases are binary compatible |
+| 2016 | v2.12 to be released in summer |
+| ongoing | Dotty, ScalaMeta, etc. |
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Some important Features
+
+- Lightweight and concise syntax
+- Powerful static type system
+- Great flexibility facilitates creating internal DSLs
+- Fully compatible with Java
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### One Quick Teaser
+
+Scala
+
+``` scala
+class Person(val firstName: String, val lastName: String)
+```
+
+Java
+
+``` java
+public class Person {
+  private final String firstName;
+  private final String lastName;
+  public Person(String firstName, String lastName) {
+    this.firstName = firstName;
+    this.lastName = lastName;
+  }
+  public String getFirstName() {
+    return firstName;
+  }
+  public String getLastName() {
+    return lastName;
+  }
+}
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+</section>
+
+<!-- ########################################################################################### -->
+<!-- Tooling                                                                                     -->
+<!-- ########################################################################################### -->
+
+<section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+## Tooling
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+![sbt](images/sbt.png "sbt")
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown data-background="images/codecentric-green-background-16x9.png"><script type="text/template">
+### Group Exercise – Set up sbt Project
+
+- Create `scala-train` directory
+- Create `build.sbt` file:
+  - set `name`, `organization`, `version`
+  - set `scalaVersion`, `scalacOptions`
+  - set `scalariformPreferences`
+- Create `project/build.properties` file: set `sbt.version`
+- Create `project/build.plugins` file: add `sbt-scalariform` plugin
+- See [Gist](https://gist.github.com/hseeberger/78fe468e659d24a04a9e)
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown data-background="images/codecentric-green-background-16x9.png"><script type="text/template">
+### Group Exercise – Hello, sbt!
+
+- Some important commands/tasks:
+  - `exit`
+  - `compile`, `test`, `run`
+- Start the REPL from sbt:
+  - `console`
+  - Evaluate `1 + 1` and `"Hello, " + "sbt!"`
+  - Exit REPL with `:quit`
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+![IntelliJ IDEA](images/intellij-idea.png "IntelliJ IDEA")
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown data-background="images/codecentric-green-background-16x9.png"><script type="text/template">
+### Group Exercise – Hello, IntelliJ IDEA!
+
+- Import scala-train into IDEA:
+  - Select `build.sbt`
+  - Check "Use auto-import", "Create dir..."" and "Sources"
+  - Don't check "Sources for SBT ..."
+- Create a worksheet:
+  - Call it `scratch` and put it in the root directory
+  - Check "Make project"
+  - Enter `1 + 1` and `"Hello, " + "sbt!"`
+</script></section>
+
+<!-- ########################################################################################### -->
+
+</section>
+
+<!-- ########################################################################################### -->
+<!-- OO Basics                                                                                   -->
+<!-- ########################################################################################### -->
+
+<section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+## OO Basics
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Classes
+
+- Classes are defined with the `class` keyword
+- Instances are created with the `new` keyword
+
+``` scala
+scala> class Person
+defined class Person
+
+scala> new Person
+res0: Person = Person@4106e4df
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown data-background="images/codecentric-green-background-16x9.png"><script type="text/template">
+### Exercise – Classes
+
+- Define the `Train` class
+- Create a `Train` instance in the worksheet or REPL
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Class parameters
+
+- Classes may define parameters
+- Class parameters represent parameters of the primary constructor
+
+``` scala
+scala> class Person(firstName: String, lastName: String)
+defined class Person
+
+scala> new Person
+<console>:15: error: not enough arguments for constructor Person: (firstName: String, lastName: String)Person.
+Unspecified value parameters firstName, lastName.
+
+scala> new Person("Martin", "Odersky")
+res1: Person = Person@35a8bea7```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown data-background="images/codecentric-green-background-16x9.png"><script type="text/template">
+### Exercise – Class Parameters
+
+- Add the `number` parameter of type `Int` to `Train`
+- Again, create a `Train` instance in the worksheet or REPL
+- Can you access `number`?
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Immutable Values
+
+- Immutable values are defined with the `val` keyword
+- Immutable values can't be reassigned
+
+``` scala
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+class Person(firstName: String, lastName: String) {
+  val name: String = s"$firstName $lastName"
+}
+// Exiting paste mode, now interpreting.
+defined class Person
+
+scala> val person = new Person("Martin", "Odersky")
+person: Person = Person@2a2f1a90
+
+scala> person.name
+res0: String = Martin Odersky
+
+scala> person.name = "James Gosling"
+<console>:15: error: reassignment to val
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Mutable Variables
+
+- Mutable variables are defined with the `var` keyword
+- **Attention**: Keep the API immutable!
+
+``` scala
+scala> var n = 0
+n: Int = 0
+
+scala> n = 1
+n: Int = 1
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Promote Class Parameters
+
+- A class parameter becomes an immutable value with the `val` keyword
+- A class parameter becomes a mutable variable with the `var` keyword – why should you avoid that?
+
+``` scala
+scala> class Person(val firstName: String, val lastName: String)
+defined class Person
+
+scala> val person = new Person("Martin", "Odersky")
+person: Person = Person@57f6fa44
+
+scala> person.firstName
+res0: String = Martin
+
+scala> person.lastName
+res1: String = Odersky
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown data-background="images/codecentric-green-background-16x9.png"><script type="text/template">
+### Exercise – Promote Class Parameters
+
+- Add (prefix) the `kind` parameter of type `String` to `Train`
+- Promote both parameters to immutable fields
+- Add a comment to the consturctor body:
+  - Where is that?
+  - "Check preconditions: kind must not be empty!"
+- Make sure you can access `kind` and `number`
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Methods
+
+- Methods are defined with the `def` keyword
+- The body is a single expression or a block – no `return`
+- **Attention**: Don't forget the equals sign!
+
+``` scala
+class Person(val firstName: String, val lastName: String) {
+
+  def changeLastName(newLastName: String): Person =
+    new Person(firstName, newLastName)
+}
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Zero-parameter Methods
+
+- If a method has no parameters, the parameter list – i.e. parentheses – can be omitted
+- Convention:
+  - If the method has no side-effects, omit parentheses
+  - If the method returns `Unit`, use parentheses
+
+``` scala
+class Person(val firstName: String, val lastName: String) {
+
+  def name: String = s"$firstName $lastName"
+
+  def printName(): Unit = println(name)
+}
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown data-background="images/codecentric-green-background-16x9.png"><script type="text/template">
+### Exercise – Methods
+
+- Define the `Time` class
+- Add the `hours` and `minutes` parameters, both or type `Int`
+- Promote both parameters to immutable values
+- Add comments:
+  - "Check preconditions: hours must be within [0, 24)!"
+  - "Check preconditions: minutes must be within [0, 60)!"
+- Add the `minus` method:
+  - Use one parameter of type `Time`
+  - Return an `Int` representing the difference in minutes
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Local Methods
+
+- Like values and variables, methods can be local, too
+- Local methods are only visible in the enclosing scope
+
+``` scala
+class Person(val firstName: String, val lastName: String) {
+
+  def printName(): Unit = {
+    def name = s"$firstName $lastName"
+    println(name)
+}
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown data-background="images/codecentric-green-background-16x9.png"><script type="text/template">
+### Group Exercise – Local Methods
+
+- Use a local method to implement `minus`
+- Which are the alternatives?
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Operators
+
+- Operators are just methods with "special" names
+- Any method taking one argument can be called with infix operator notation
+- Convention: Use operator notation for operators only
+
+```scala
+scala> 1 + 1
+res0: Int = 2
+
+scala> 1.+(1) // Don't use dot-notation here!
+res1: Int = 2
+
+scala> "Martin Odersky" split " " // Don't use infix here!
+res2: Array[String] = Array(Martin, Odersky)
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown data-background="images/codecentric-green-background-16x9.png"><script type="text/template">
+### Exercise – Operators
+
+- Add the `-` operator to `Time`
+- Use the same signature like for `minus`
+- For the implementation delegate to `minus`
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Named and Default Arguments
+
+- Parameters can define default values
+- When calling a method, named arguments can be used
+- Positional and named arguments can be mixed
+
+```scala
+scala> :paste
+class Position(x: Int = 0, y: Int = 0) {
+  override def toString = s"($x, $y)" // override is covered later
+}
+// Exiting paste mode, now interpreting.
+defined class Position
+
+scala> new Position(7)
+res0: Position = (7, 0)
+
+scala> new Position(y = 3)
+res1: Position = (0, 3)
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown data-background="images/codecentric-green-background-16x9.png"><script type="text/template">
+### Exercise – Named and default Arguments
+
+- In `Time`, use `0` as default for `hours` and `minutes`
+- Experiment with positional and named arguments in the worksheet or REPL
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Packages
+
+- Packages are used to group related classes
+- Although the directory structure may deviate from the package structure, by convention both should match
+- Chained package clauses bring members of superpackages into scope
+
+```scala
+package com.acme.top.sub
+
+// or
+
+package com.acme.top
+package sub
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Imports
+
+- Imports can be placed anywhere, e.g. at method level
+- Imports can be used with any stable identifier:
+  - Package
+  - Singleton object (covered later)
+  - Immutable field
+
+```scala
+import java.util.Date
+import java.util._                  // Wildcard
+import java.util.{ Date, List }     // Import selector clause
+import java.sql.{ Date => SqlDate } // Rename a member
+
+def foo(person: Person): Unit = {
+  import person._
+  // ...
+}
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown data-background="images/codecentric-green-background-16x9.png"><script type="text/template">
+### Exercise – Packages
+
+- Move `Time` and `Train` into the `de.heikoseeberger.scalatrain` package
+- Hint: Use the refactoring facilities of your IDE
+- Add the following setting to `build.sbt:`
+
+``` scala
+initialCommands := "import de.heikoseeberger.scalatrain._"
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Singleton Objects
+
+- A ready to use object is defined with the `object` keyword
+- Usage of singleton objects:
+  - Replacement for `static`
+  - Implicit resolution (not covered here)
+- Companions have the same name, file and package and can access their private members
+
+```scala
+object Person {
+
+  final val TheBoss = new Person("Martin", "Odersky") // Constant
+
+  private val namePattern = """(\w+)\s(\w+)""".r
+
+  def fromName(name: String): Person = {
+    val namePattern(first, last) = name // pat.mat. is covered later
+    new Person(first, last)
+  }
+}
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown data-background="images/codecentric-green-background-16x9.png"><script type="text/template">
+### Group Exercise – Singleton Objects
+
+- How can singleton objects be accessed?
+- Can you extend from a singleton object?
+- Define the `Time` companion object
+- Add the `fromMinutes` factory method to it:
+  - Use one parameter of type `Int` representing minutes
+  - Return a normalized `Time`, i.e. minutes less than 60
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Predef
+
+- All memebers of the [`Predef`](http://www.scala-lang.org/api/current/#scala.Predef$) singleton object are visible by default
+- Example: `require` can be used to check preconditions
+
+```scala
+require(person == Person.TheBoss, "person must be the boss!")
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown data-background="images/codecentric-green-background-16x9.png"><script type="text/template">
+### Exercise – Predef
+
+- Use `require` to add the missing precondition check in `Train`
+- Don't yet add the missing precondition checks in `Time`
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Case Classes I
+
+- Case classes can be defined with the `case class` keywords
+- They represent immutable value objects, aka entities or data transfer objects
+
+```scala
+case class Person(firstName: String, lastName: String)
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Case Classes II
+
+- The companion object defines an `apply` factory method, hence for case classes no `new` is needed
+- Case class parameters are promoted to immutable values, thus no `val` is needed
+
+``` scala
+scala> val person = Person("Martin", "Odersky")
+person: Person = Person(Martin,Odersky)
+
+scala> person.firstName
+res0: String = Martin
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Case Classes III
+
+- For case classes `equals`, `hashCode` and `toString` are overridden based on the parameters
+- The `copy` method uses the class arguments as defaults
+- Case classes can be used in pattern matching (covered later)
+
+```scala
+scala> person == Person("James", "Gosling")
+res1: Boolean = false
+
+scala> person.copy(lastName = "Gosling")
+res2: Person = Person(Martin,Gosling)
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown data-background="images/codecentric-green-background-16x9.png"><script type="text/template">
+### Exercise – Case Classes
+
+- Make `Time` and `Train` case classes
+- Experiment with the features in the worksheet or REPL
+</script></section>
+
+<!-- ########################################################################################### -->
+
+</section>
+
+<!-- ########################################################################################### -->
+<!-- Testing                                                                                     -->
+<!-- ########################################################################################### -->
+
+<section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+## Testing
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### ScalaTest
+
+- [ScalaTest](http://scalatest.org) is the most popular testing library for Scala
+- ScalaTest offers various [testing styles](http://scalatest.org/at_a_glance/WordSpec) – we use BDD style with `WordSpec`
+- Matchers – e.g. `shouldBe` – make for expressive test code as well as informative error messages
+
+``` scala
+class PersonSpec extends WordSpec with Matchers {
+
+  "Calling name" should { // subject
+    "return first and last name separated by a blank" in { // test
+      val person = Person("Martin", "Odersky")
+      person.name shouldBe "Martin Odersky"
+    }
+  }
+}
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Some important ScalaTest Matchers
+
+``` scala
+"hello" shouldBe "hello"
+
+1 should not be 2
+
+"hello" should startWith("hell")
+
+numbers shouldBe 'empty
+
+numbers should contain allOf(1, 2, 3)
+
+numbers should contain inOrder(1, 2, 3)
+
+an[Exception] should be thrownBy sys.error("BOOM")
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown data-background="images/codecentric-green-background-16x9.png"><script type="text/template">
+### Group Exercise – Reconfigure sbt Project
+
+- In `build.sbt`, add the `libraryDependencies` setting:
+  - Use the `++=` operator for adding to a sequence
+  - Add `"org.scalatest" %% "scalatest" % "2.2.6" % "test"`
+  - Reload the sbt session
+- Execute `test:console` and make sure that ScalaTest is available:
+  - Import `org.scalatest.Matchers._`
+  - Evaluate some expressions from the previous slide
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown data-background="images/codecentric-green-background-16x9.png"><script type="text/template">
+### Exercise – Testing
+
+- Define the `TimeSpec` class:
+  - Add "Calling fromMinutes" subject:
+    - Add "return Time(0, 10) for 10 minutes" test
+    - Add "return Time(1, 10) for 70 minutes" test
+  - Add "Calling minus or -" subject:
+    - Add "return 0 for equal Times" test
+    - Add "return 60 for Time(1, 10) and Time(0, 10)"
+- Define the `TrainSpec` class:
+  - Add "Creating a Train" subject with "throw an IllegalArgumentException for an empty kind" test
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Property based Testing with ScalaCheck
+
+- [ScalaCheck](http://scalacheck.org) makes for property based testing:
+  - Properties are simply boolean expression
+  - Properties are tested with generated test data
+- ScalaTest offers ScalaCheck integration
+
+``` scala
+class PersonSpec extends WordSpec with Matchers with GeneratorDrivenPropertyChecks {
+
+  "Calling name" should { // subject
+    "return first and last name separated by a blank" in { // test
+      forAll("first", "last") { (first: String, last: String) =>
+        val person = Person(first, last)
+        person.name shouldBe s"$first $last"
+      }
+    }
+  }
+}
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown data-background="images/codecentric-green-background-16x9.png"><script type="text/template">
+### Group Exercise – Property based Testing
+
+- Update `build.sbt` with library dependency<br>`"org.scalacheck" %% "scalacheck" % "1.12.5"`
+- Update `TimeSpec`:
+  - Add "return a correct Time for minutes within [0, 1440)" test to "Calling fromMinutes" subject
+  - Add "Creating a Time" subject:
+    - Add "throw an IllegalArgumentException for hours less than 0 or greater equal 24" test
+    - Add "throw an IllegalArgumentException for minutes less than 0 or greater equal 60" test
+  - Add "return a correct value for any two Times" test to "Calling minus or -" subject
+</script></section>
+
+<!-- ########################################################################################### -->
+
+</section>
+
+<!-- ########################################################################################### -->
+<!-- FP Basics                                                                                   -->
+<!-- ########################################################################################### -->
+
+<section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+## FP Basics
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Scala Collections Overview
+
+![Scala Collections Overview](images/scala-collections.svg "Scala Collections Overview") <!-- .element class="max" -->
+
+Note:
+- In most cases `Vector` should be used because of perf. characteristics
+- `Array` and `Option` aren't collections but they can be used as if they were
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Creating Collections
+
+``` scala
+scala> Vector(1, 2, 3)
+res0: scala.collection.immutable.Vector[Int] = Vector(1, 2, 3)
+
+scala> Vector(1, 2, "3")
+res1: scala.collection.immutable.Vector[Any] = Vector(1, 2, 3)
+
+scala> Set(1, 1, 2)
+res2: scala.collection.immutable.Set[Int] = Set(1, 2)
+
+scala> Map((1, "a"), 2 -> "b")
+res3: scala.collection.immutable.Map[Int,String] = Map(1 -> a, 2 -> b)
+
+scala> (1, "a")
+res4: (Int, String) = (1,a)
+```
+
+Note:
+- Collections always have type parameters
+- Companion objects have `apply` factories
+- Type aliases point to immutable collections except for `Seq` and higher
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Some important Collection Methods I
+
+``` scala
+scala> val numbers = Vector(1, 2, 3)
+numbers: Vector[Int] = Vector(1, 2, 3)
+
+scala> numbers.isEmpty
+res0: Boolean = false
+
+scala> numbers.size
+res1: Int = 3
+
+scala> numbers.head
+res2: Int = 1
+
+scala> numbers.tail
+res3: Vector[Int] = Vector(2, 3)
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Some important Collection Methods II
+
+``` scala
+scala> numbers.take(2)
+res4: Vector[Int] = Vector(1, 2)
+
+scala> numbers.drop(2)
+res5: Vector[Int] = Vector(3)
+
+scala> 0 +: numbers :+ 4
+res6: Vector[Int] = Vector(0, 1, 2, 3, 4)
+
+scala> numbers ++ List(4, 5)
+res7: Vector[Int] = Vector(1, 2, 3, 4, 5)
+
+scala> List(1, 1, 1, 2, 3).distinct
+res8: List[Int] = List(1, 2, 3)
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown data-background="images/codecentric-green-background-16x9.png"><script type="text/template">
+### Exercise – Collections
+
+- Define the `Station` case class:
+  - Add the `name` paramter of type `String`
+  - Add a precondition check "name must not be empty!"
+- Add the `schedule` paramter of type immutable `Seq[Station]` to `Train`:
+  - Add a precondition check "schedule must have at least two stops!"
+  - Add a precondition check "schedule must not contain duplicate stations!"
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Functions
+
+- Functions are first class citizens, i.e. values/objects
+- A function has a type, e.g.:
+  - `String => Int` which is `Function1[String, Int]`
+  - `(Int, Int) => Int` which is `Function2[Int, Int, Int]`
+
+``` scala
+scala> val addOne = (n: Int) => n + 1
+addOne: Int => Int = <function1>
+
+scala> addOne(10) // Each function defines `apply`
+res0: Int = 11
+
+scala> def invoke(f: Int => Int, n: Int): Int = f(n)
+invoke: (f: Int => Int, n: Int)Int
+
+scala> invoke(addOne, 10)
+res1: Int = 11
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Lifting Methods to Functions
+
+- Methods can be used where functions are expected
+- This requires lifting a method to a function:
+  - Prior to Java 8 this meant allocating an object
+  - Since Java 8 this works with method references
+
+``` scala
+scala> def addOne(n: Int) = n + 1
+addOne: (n: Int)Int
+
+scala> def invoke(f: Int => Int, n: Int): Int = f(n)
+invoke: (f: Int => Int, n: Int)Int
+
+scala> invoke(addOne, 10)
+res0: Int = 11
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Higher-order Functions
+
+- The Scala collections define a lot of methods with parameters of type `FunctionN`
+- These are called higher-order functions, like methods returning functions
+
+``` scala
+scala> val numbers = Vector(1, 2, 3)
+numbers: Vector[Int] = Vector(1, 2, 3)
+
+scala> numbers.foreach(println)
+1
+2
+3
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Transforming Collections with `map`
+
+- `map` takes a function `A => B` and applies it to all collection elements
+- Each transformed element is added to the result
+- The container type remains the same, but the element type may change
+
+``` scala
+trait Traversable[A] {
+  def map[B](f: A => B): Traversable[B]
+}
+```
+
+``` scala
+scala> Vector(1, 2, 3).map(n => n + 1)
+res0: Vector[Int] = Vector(2, 3, 4)
+
+scala> Vector(1, 2, 3).map(n => s"#$n")
+res1: Vector[String] = Vector(#1, #2, #3)
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown data-background="images/codecentric-green-background-16x9.png"><script type="text/template">
+### Exercise – `map`
+
+- Define the `Stop` case class:
+  - Add the `station` paramter of type `Station`
+  - Add the `arrivalTime` paramter of type `Time`
+  - Add the `departureTime` paramter of type `Time`
+  - Add a comment "Check precondition: arrivalTime must be before departureTime!"
+- In `Train`:
+  - Change `schedule` to `Seq[Stop]`:
+  - Add a comment "Check precondition: schedule must be increasing in time!"
+  - Add the `stations` method transforming the `schedule` to a `Seq[Station]`
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Transforming Collections with `flatMap`
+
+- `flatMap` takes a function `A => Traversable[B]` and applies it to all collection elements
+- For each element of type `A` each element of the resulting collection of type `B` is added to the result
+
+``` scala
+trait Traversable[A] {
+  def flatMap[B](f: A => Traversable[B]): Traversable[B]
+}
+```
+
+``` scala
+scala> Vector(10, 20, 30).flatMap(n => Vector(n - 1, n, n + 1))
+res0: Vector[Int] = Vector(9, 10, 11, 19, 20, 21, 29, 30, 31)
+
+scala> Vector("Hello", "World").flatMap(s => s.toLowerCase)
+res1: Vector[Char] = Vector(h, e, l, l, o, w, o, r, l, d)
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown data-background="images/codecentric-green-background-16x9.png"><script type="text/template">
+### Exercise – `flatMap`
+
+- Define the `JourneyPlanner` class:
+  - Add the `trains` parameter, an immutable collection of `Train`s – which collection type fits best?
+  - Add the `stations` method returning all `Station`s of all `Train`s
+- What happens if you use `map` to implement `stations`? How do type annotations help here?
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Filtering Collections
+
+- `filter` takes a predicate: a function `A => Boolean`
+- Only elements for which the predicate holds (is `true`) are added to the result
+
+``` scala
+trait Traversable[A] {
+  def filter(f: A => Boolean): Traversable[A]
+}
+```
+
+``` scala
+scala> Vector(1, 2, 3).filter(n => n % 2 != 0)
+res0: Vector[Int] = Vector(1, 3)
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown data-background="images/codecentric-green-background-16x9.png"><script type="text/template">
+### Exercise – `filter`
+
+- Add the `trainsAt` method to `JourneyPlanner`:
+  - Use one parameter of type `Station`
+  - Return all `Train`s that stop at the given `Station`
+  - Which collection type makes most sense?
+- Hint: `contains` might be useful
+</script></section>
+
+<!-- ########################################################################################### -->
+
+</section>
+
+<!-- ########################################################################################### -->
+<!-- For-Comprehensions                                                                          -->
+<!-- ########################################################################################### -->
+
+<section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+## For-Comprehensions
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### For-Comprehensions
+
+- For-comprehensions transform one ore more collections into another (flat) one
+- Generators drive the traversal by producing elements
+- The `yield`-expression produces elements of the resulting collection
+
+``` scala
+scala> for (c <- "abc") yield c.toUpper
+res0: String = ABC
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Generators
+
+- The first generator determines the collection type
+- Subsequent generators are nested underneath previous ones
+
+``` scala
+scala> :pa
+// Entering paste mode (ctrl-D to finish)
+for {
+  x <- 1.to(2) // `to` creates a `Range`, which is
+  y <- 1.to(x) // an `IndexedSeq[Int]` with a fixed step
+} yield (x, y)
+// Exiting paste mode, now interpreting.
+res1: IndexedSeq[(Int, Int)] = Vector((1,1), (2,1), (2,2))
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Filters and Definitions
+
+- Filters are applied to the preceding generator
+- Definitions are locally scoped immutable values
+- Quiz:
+  - What's the type of `times`?
+  - What's a possible value for `times`?
+
+``` scala
+scala> :pa
+// Entering paste mode (ctrl-D to finish)
+for {
+  time <- times
+  hours = time.hours if hours > 12
+} yield s"${hours - 12}pm"
+// Exiting paste mode, now interpreting.
+res0: Vector[String] = Vector(1pm, 2pm)
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown data-background="images/codecentric-green-background-16x9.png"><script type="text/template">
+### Exercise – For-Comprehensions
+
+- Add the `departuresAt` method to `JourneyPlanner`:
+  - Use one parameter of type `Station`
+  - Return all `(Time, Train)` tuples (first element is departure time) of the given `Station`
+- Use a for-comprehension with two generators and one filter
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Translation of For-Comprehensions
+
+- For-comprehensions are just syntacitc sugar:
+  - All but the last generator become `flatMap` calls
+  - The last or only generator becomes a `map` call
+  - Filters become `withFilter` or `filter` calls
+- For-comprehensions work with any type defining the above methods
+Note:
+ - discuss translation of one-generator example to `seq.map(v => yielder)`
+ - then two-generator example to `seq1.flatMap(v1 => seq2.map(v2 => yielder))`
+</script></section>
+
+<!-- ########################################################################################### -->
+
+</section>
+
+<!-- ########################################################################################### -->
+
+</section>
+
+<!-- ########################################################################################### -->
+<!-- Inheritance and Traits                                                                      -->
+<!-- ########################################################################################### -->
+
+<section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+## Inheritance and Traits
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Defining Subclasses
+
+- Scala allows to define class hierarchies
+
+``` scala
+class Animal
+class Fish extends Animal
+```
+
+- Use `extends` to name the superclass
+- Superclass is `AnyRef` if no extends-clause is given
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Calling Superclass Constructors
+
+- A superclass constructor must be called in the extends-clause with all class parameters
+
+``` scala
+class Animal(val name: String)
+class Fish(name: String) extends Animal(name)
+```
+
+- The superclass constructor is called before the class constructor
+
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Inheritance in Scala
+
+- Single class inheritance
+  - There is always exaclty one superclass
+  - No ambiguity and complexity
+  - Limited possibilites for re-use and code organization
+- Multiple trait mix-ins
+  - Behaviors can be mixed-in with traits
+  - Powerful tool for organizing and sharing code
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Overriding Fields and Methods
+
+- Fields and methods can be overridden in subclasses
+
+``` scala
+class Animal {
+  def shout(): Unit = println("What does this animal say?")
+}
+
+class Fish extends Animal {
+  override def shout() = {
+    super.shout()
+    println("Bubble")
+  }
+}
+```
+
+- `override` is mandatory when overriding a member
+- `super` enables accessing superclass members
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Uniform Access Principle
+
+- Dynamic computation (`def`) can be overridden by stable storage (`val`)
+
+``` scala
+class Animal {
+  def name: String = "Metazoa"
+}
+
+class Fish extends Animal {
+  override val name = "Chordate"
+}
+```
+
+- Clients do not see how the property is implemented
+- This works for parameterless `def` only
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Limiting Inheritance and Overriding
+
+- Inheritance and overriding members can be controlled with the help of `final`
+
+``` scala
+class Animal {
+  final def kingdom: String = "Metazoa"
+}
+final class Fish extends Animal
+```
+
+- Use `final` to prevent
+  - classes from being extended
+  - members from being overridden
+
+</script></section>
+
+<section data-markdown><script type="text/template">
+### Limiting Inheritance with Sealed Classes
+
+- Sealed classes can only be extended in the same source file
+
+``` scala
+sealed class Animal
+final class Fish extends Animal
+class Bird extends Animal
+```
+
+- The complete set of direct subclasses is therefore known
+- Sealed classes are used to define algebraic data types (ADT) such as the `Option` type with `Some` and `None`
+</script></section>
+
+<section data-markdown><script type="text/template">
+### String Interpolation Reminder
+
+- Strings can be prefixed with `s` and `f` for referencing variables in scope
+
+``` scala
+scala> val num = 7
+num: Int = 7
+
+scala> s"$num"
+res1: String = 7
+
+scala> f"${num}%03d"
+res2: String = 007
+```
+
+- Strings with an `s`-prefix allow to use expressions prefixed with `$` or enclosed in `${...}`
+- Strings with an `f`-prefix allow to use [format string directives](https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html)
+
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown data-background="images/codecentric-green-background-16x9.png"><script type="text/template">
+### Exercise – Overriding
+
+- The `toString` method of the `Time` can be improved to produce a more familiar format
+- Instead of e.g. `Time(11,5)` we want to produce `11:05`
+- Override the `toString` method of `Time` with a val that stores the desired string
+- Hint: use a format string `f"..."` with format `%02d`
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Abstract Classes and Members
+
+- Abstract classes allow to define class signature without all of its implementation.
+
+``` scala
+abstract class Animal {
+  def name: String
+}
+class Fish extends Animal {
+  override def name = "Chordate"
+}
+```
+
+- Abstract classes can have abstract members, but no instances
+- Concrete subclasses must implement abstract members
+- `override` is optional – it should be used
+</script></section>
+
+<section data-markdown data-background="images/codecentric-green-background-16x9.png"><script type="text/template">
+### Exercise – The TrainInfo Class Hierarchy
+
+- Define an algebraic data type (ADT) `TrainInfo` with
+  - a sealed abstract class `TrainInfo` having an abstract `number` method with type `Int`
+  - three case classes `InterCityExpress`, `InterCity`, `RegionalExpress` that extend `TrainInfo`
+- In the `InterCityExpress` class, add a `hasWifi` class parameter of type `Boolean` with default value `false`
+- In the `Train` class, replace `kind` and `number` with an `info` class parameter of type `TrainInfo`
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Type Hierarchy – Bottom and Top Types
+
+![](images/scala-hierarchy.png "Type Hierarchy Overview")
+Note:
+- `Null` has one member, `null`
+- `Nothing` has no member
+- `Nothing` is used e.g. for code that throws an exception. Show with an if-then-else example
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Traits
+
+- Scala classes allow single inhertiance only
+- Trait mix-in composition is a clean alternative to multiple inheritance
+
+``` scala
+trait Swimmer {
+  def swim: String = "I am swimming"
+}
+```
+
+- Traits can contain abstract and concrete members, but no class parameters
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Trait Mix-In
+
+- Consider a `Duck` class that should have both a `swim` and `fly` method
+
+``` scala
+class Bird {
+  def fly: String = "I am flying"
+}
+trait Swimmer {
+  def swim: String = "I am swimming"
+}
+class Fish extends Swimmer
+class Duck extends Bird with Swimmer
+```
+
+- The method `swim` is mixed into `Fish` and `Duck` without (ab-)using class inheritance
+- Traits are not implemented, they are mixed-in
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Class Inheritance and Trait Syntax
+
+- Use this rule of thumb:
+  - For the first type, use `extends`, no matter whether it is a trait or class
+  - After that, mix-in additional traits using `with`
+
+``` scala
+trait Breather {
+  def breathe: String = "I am breathing"
+}
+class Dolphin extends Animal with Swimmer with Breather
+class MichaelPhelps extends Swimmer
+```
+
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown data-background="images/codecentric-green-background-16x9.png"><script type="text/template">
+### Exercise – Traits
+
+In the `Time` class, mix-in the `Ordered` trait
+- Look up the [Scala standard library](http://www.scala-lang.org/api/current/index.html)
+- Read up on how to extend this trait
+- Note the type alias in the scala package!
+- Try out some of the `Ordered` operations: `<`, `>=`, ...
+</script></section>
+
+<!-- ########################################################################################### -->
+
+</section>
+
+<!-- ########################################################################################### -->
+<!-- Pattern Matching                                                                            -->
+<!-- ########################################################################################### -->
+
+<section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+## Pattern Matching
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Match Expression Syntax
+
+- An expression can be matched against a list of patterns using a match expression
+
+``` scala
+expression match {
+  case pattern1 => result1
+  case pattern2 => result2
+}
+```
+
+- `match` introduces a block with `case` clauses
+- Each `case` clause consists of a `pattern` followed by `=>` and an `expression`
+- The `case` clauses are tried in order, a `MatchError` is thrown if no clause matches
+- The first matching clause expression is evaluated
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Wildcard Pattern
+
+- Matches everything
+
+``` scala
+def whoIs(any: Any): String = any match {
+  case _ => "Unknown creature"
+}
+```
+
+- Can be used to create a default case and avoid `MatchError`
+- Can be combined with some of the patterns that follow
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Constant Pattern
+
+- Matches if the given value equals the constant
+
+``` scala
+object Dagobert
+val gladstone = "Gladstone"
+def whoIs(any: Any): String = any match {
+  case "Donald"    => "An angry duck"
+  case Dagobert    => "A very rich duck"
+  case `gladstone` => "A very lucky duck"
+}
+```
+
+- Literals, objects and vals are allowed – basically, everything that is a `stable identifier`
+- **Attention**: enclose lowercase vals in backticks, otherwise it is interpreted as
+  variable pattern!
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Variable and Typed Pattern
+
+- The variable pattern captures the expression
+- The typed pattern matches only when the expression has the given type
+
+``` scala
+def whoIs(any: Any): String = any match {
+  case age: Int => if (age >= 100) "Pretty old" else "Still young"
+}
+```
+
+- Note that the type of `age` is narrowed down to `Int` through the enclosing type pattern
+- Variable patterns are almost always combined with other patterns
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Tuple Pattern
+
+- Matches tuples of the given arity
+- Extracts the tuple elements, making them accessible for matching
+
+``` scala
+def whoIs(any: Any): String = any match {
+  case (name: String, _) =>
+    s"Two things, the first named $name with length ${name.length}"
+}
+```
+
+- Here, we match
+  - the first element against a typed variable pattern
+  - the second element against a wildcard pattern
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Constructor Pattern
+
+- Matches a case class of the given type
+- Extracts the class fields, making them accessible for matching
+
+``` scala
+def whoIs(any: Any): String = any match {
+  case Duck(name) => s"A duck called $name"
+}
+```
+
+- Here, we match the first field with a variable pattern `name` to capture it
+- Note that this pattern can be combined with other patterns and can therefore
+  be nested to match nested case classes
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown data-background="images/codecentric-green-background-16x9.png"><script type="text/template">
+### Exercise – Using Pattern Matching
+
+- Override the `toString` method in the class `Train`, by pattern matching on the `info` field.
+  - For an ICE with wifi, produce "ICE `<number>` (WIFI)"
+  - For an ICE without wifi, produce "ICE `<number>`"
+  - For an intercity, produce "IC `<number>`"
+  - For a regional express, produce "RE `<number>`"
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Sequence Pattern
+
+- The sequence pattern makes the elements of a sequence accessible for matching
+
+``` scala
+def whoIs(any: Any): String = any match {
+  case Seq(Duck(name), _*) => s"Some things, a duck called $name first"
+}
+```
+
+- The trailing wildcard `_*` matches the remaining number of elements
+- Multiple leading elements can be matched before `_*`
+- Without `_*`, the sequence matches only if it contains no more trailing elements
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Regular Expression Pattern
+
+- Matches a `String` only if it is a full match
+- Extracts the match groups
+
+``` scala
+val namePattern = """(\w+)\s(\w+)""".r
+
+def whoIs(any: Any): String = any match {
+  case Duck(namePattern(first, last)) =>
+    s"A duck with full name $first $last"
+}
+```
+
+- To scan a `String` for a pattern, use the `unanchored` method of
+  [Regex](http://www.scala-lang.org/api/current/index.html#scala.util.matching.Regex)
+
+``` scala
+val scanningNamePattern = """(\w+)\s(\w+)""".r.unanchored
+```
+
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Pattern Guards
+
+- A pattern guard can be appended to a pattern to add additional constraints to a match
+
+``` scala
+def whoIs(any: Any): String = any match {
+  case age: Int if age >= 100 => "Pretty old"
+  case _  : Int => "Still young"
+}
+```
+
+- It is not a pattern of its own
+- Best practice: for readability, avoid complex logic in guards
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Variable Binding
+
+- Variable binding can be used to bind expressions that are matched with nested patterns
+
+``` scala
+def whoIs(any: Any): String = any match {
+  case duck @ Duck(name) if name.endsWith("Duck") =
+    s"$duck called Duck"
+}
+```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown data-background="images/codecentric-green-background-16x9.png"><script type="text/template">
+### Exercise – Pattern Matching Reloaded
+
+- A trip is a short trip if a train exists that connects the origin and target destination by a schedule
+  with at most one intermediate stop
+- Define a method `isShortTrip` in `JourneyPlanner` with parameters `from` and `to` of type `Station`
+  - verify that a train in `trains` exists such that
+  - its `stations`, when dropping all elements before `from`
+  - matches a sequence containing `from`, followed by `to`
+  - or matches a sequence containing `from`, followed by any station, followed by `to`
+- Hint: use `exists` and `dropWhile` and a match expression with a sequence pattern
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Patterns in `val`s
+
+- Patterns can be used on the left-hand-side of `val`s to destruct the right-hand-side expression
+
+``` scala
+val timeAndStation = Time(1) -> Station("A")
+val (time, station) = timeAndStation
+val (time, _) = timeAndStation
+val (time, Station("B")) = timeAndStation
+```
+
+- **Attention**: `MatchError` can be produced with non-exhaustive patterns!
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Patterns in For-Expressions
+
+- Generators can benefit from using patterns as well
+
+``` scala
+for (pair <- Map(1 -> "a", 2 -> "b") if pair._1 == 2)
+  yield pair._2
+
+for ((2, value) <- Map(1 -> "a", 2 -> "b"))
+  yield value
+```
+
+- With patterns, you can
+  - desctruct tuples and case classes on the left-hand-side of the arrow
+  - express conditions through constant patterns
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown data-background="images/codecentric-green-background-16x9.png"><script type="text/template">
+### Group Exercise – Patterns in For-Expressions
+
+- Use pattern matching to simplify the method `departuresAt` of `JourneyPlanner`
+
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Other Uses of Case Clauses
+
+- `case` can be used to define partial functions
+
+``` scala
+scala> :pa
+// Entering paste mode (ctrl-D to finish)
+val fn: PartialFunction[Any,String] = {
+  case i: Int => i.toString
+}
+// Exiting paste mode, now interpreting.
+fn: PartialFunction[Any,String] = <function1>
+
+scala> fn.isDefinedAt("3")
+res0: Boolean = false
+
+scala> fn(3)
+res1: String = 3
+```
+
+- A [PartialFunction](http://www.scala-lang.org/api/current/#scala.PartialFunction)
+  is defined for specific values only
+- `isDefinedAt` tells whether the given argument is valid for the function
+- `case` clauses allow to define partial function literals
+</script></section>
+
+<!-- ########################################################################################### -->
+
+</section>
+
+<!-- ########################################################################################### -->
+<!-- Optional Values                                                                                       -->
+<!-- ########################################################################################### -->
+
+<section>
+
+<!-- ########################################################################################### -->
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+## Optional Values
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Handling Optional Values
+
+- The Java way
+  - Use `null` value
+  - Handle for `null`-ness with if-then-else
+  - Face `NullPointerException` when acessing members of a `null` reference
+- The Scala way
+  - Use the [Option](http://www.scala-lang.org/api/current/index.html#scala.Option) type:
+    A container that maybe contains a value, with subtypes `Some` and `None`
+  - Handle Option with pattern matching or functionally
+
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Creating Option Instances
+
+- There are two ways to create `Option`s
+  - Use the `Some` and `None` constructors
+  - Use the `Option` and `None` constructors
+
+``` scala
+scala> Some("Donald")
+res0: Some[String] = Some(Donald)
+
+scala> None
+res1: None.type = None
+
+scala> Option("Dagobert")
+res2: Option[String] = Some(Dagobert)
+
+scala> Option(null)
+res3: Option[Null] = None
+```
+
+- **Attention**: Do not use the `Some` constructor on a potentially `null` value
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Handling `Option` with Pattern Matching
+
+- Values lifted into an `Option` container can be matched
+
+``` scala
+val maybeName = Option("Donald")
+
+maybeName match {
+  case Some(name) => name
+  case None       => "John Doe"
+}
+```
+
+- A default value can be provided in this way
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Handling `Option` with `getOrElse`
+
+- `getOrElse` offers another way to provide a default value
+
+``` scala
+val maybeName = Option("Donald")
+
+maybeName.getOrElse("John Doe")
+```
+
+- **Attention**: a `get` method also exists that throws a `NoSuchElementError`
+  if the value is a `None`
+
+</script></section>
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Handling `Option` with `map` and `flatMap`
+
+- The `Option` type defines `map`, `flatMap` and `filter`
+
+``` scala
+val maybeLength = Some("Donald").map(_.length)
+```
+
+- `flatMap` can combine two `Option` values
+
+``` scala
+val nameOpt = Some("Donald")
+val lastOpt = Some("Duck")
+nameOpt.flatMap(name => lastOpt.map(last => s"$name $last"))
+```
+
+- `filter` can verify a condition on an `Option`
+
+``` scala
+val maybeName = Some("Donald").filter(_.length < 8)
+```
+
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Handling `Option` with For-Comprehensions
+
+- `map`, `flatMap` and `filter` is all for-comprehension needs
+
+``` scala
+for {
+  name <- Option("Donald") if name.length < 8
+  last <- Option("Duck")
+} yield s"$name $last"
+```
+
+- Quiz: what is the return type of this expression?
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown data-background="images/codecentric-green-background-16x9.png"><script type="text/template">
+### Exercise – Using Option
+
+- In the class `Train`, add a method `departureTime` having
+  - An `at` parameter of type `Station`
+  - A return type of `Option` of `Time`
+- Return a `Time` only if the train departs from the given station
+- Hint: Have a look at the `collectFirst` method
+- In `JourneyPlanner`, simplify the method `departuresAt` by using your new method
+
+Note:
+  ```
+  schedule.collectFirst { case Stop(\`at\`, _, departureTime) => departureTime }
+
+  departureTime <- train.departureTime(\`station\`)
+  ```
+</script></section>
+
+<!-- ########################################################################################### -->
+
+</section>
+
+<!-- ########################################################################################### -->
+<!-- Outro                                                                                       -->
+<!-- ########################################################################################### -->
+
+<section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+## Wrap-Up
+
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Topics Covered
+
+- Tooling
+- OO Basics
+- Testing
+- FP Basics
+- For-Comprehensions
+- Inheritance and Traits
+- Pattern Matching
+- Option
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### Topics Not Covered
+
+- Handling failures and `Try`
+- `Future` and `Promise`
+- Implicits
+- Advanced functional topics
+- Type system topics
+
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+### How to Continue
+
+- Read and write code
+- Visit the [codecentric blog](https://blog.codecentric.de/) for Scala topics and news
+- Read [The Neophyte's Guide to Scala](http://danielwestheide.com/scala/neophytes.html)
+- Keep up with the [Scala Community](http://www.scala-lang.org/community/) in your preferred way (blogs, twitter, podcasts, ...)
+
+</script></section>
+
+<!-- ########################################################################################### -->
+
+<section data-markdown><script type="text/template">
+## Thank you!
+
+&nbsp;
+
+[![License](https://i.creativecommons.org/l/by/4.0/88x31.png "License")](http://creativecommons.org/licenses/by/4.0)<br>
+
+<span class="license">This work is licensed under a [Creative Commons Attribution 4.0 International License](http://creativecommons.org/licenses/by/4.0) and powered by [reveal.js](https://github.com/hakimel/reveal.js) under its [LICENSE](https://github.com/hakimel/reveal.js/blob/master/LICENSE).</span>
+</script></section>
+
+<!-- ########################################################################################### -->
+
+</section>
+
+<!-- ########################################################################################### -->
+<!-- END                                                                                         -->
+<!-- ########################################################################################### -->
+
+      </div>
+
+    </div>
+
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.js"></script>
+
+    <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+
+        transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+          { src: 'plugin/zoom-js/zoom.js', async: true },
+          { src: 'plugin/notes/notes.js', async: true }
+        ]
+      });
+
+    </script>
+
+  </body>
+</html>
