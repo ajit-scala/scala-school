@@ -8,6 +8,7 @@ import io.github.cloudify.scala.spdf._
 import java.io._
 import java.net._
 
+import com.example.core._
 import play.twirl.api.Html
 
 /**
@@ -59,5 +60,10 @@ class HomeController @Inject() extends Controller {
 
   def chart = Action {
     Ok(views.html.chart())
+  }
+
+  def test = Action{
+    val emp = Emp
+    Ok
   }
 }

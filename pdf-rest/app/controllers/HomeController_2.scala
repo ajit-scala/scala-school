@@ -15,7 +15,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
  * application's home page.
  */
 @Singleton
-class HomeController @Inject() extends Controller {
+class HomeController2 @Inject() extends Controller {
 
   /**
    * Create an Action to render an HTML page with a welcome message.
