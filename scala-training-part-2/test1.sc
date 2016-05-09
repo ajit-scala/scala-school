@@ -1,10 +1,8 @@
-case class Duck(name:String)
 
-val namePattern = """(\w+)\s(\w+)""".r
 
-def whoIs(any: Any): String = any match {
-  case Duck(namePattern(first, last)) =>
-    s"A duck with full name $first $last"
-}
+Option("Donald").map( x=> x.length)
 
-whoIs(Duck("abc"))
+(for {
+  name <- Option("Donald") if name.length < 8
+  last <- Option("Duck")
+} yield s"$name $last").getOrElse("no Duck")

@@ -39,6 +39,11 @@ for (person <- Seq(alice,alice2, bob, charlie)) {
 }
 
 case class Duck(name:String)
+def whoIsx(any: Any): String = any match {
+  //case Duck(name) => s"A duck called $name"
+  case d:Duck => s"A duck called ${d.name}"
+}
+whoIsx(Duck("dduucckk"))
 
 def whoIs3(any: Any): String = any match {
   case Seq(Duck, _*) => s"Some things, a duck called noname first"
@@ -54,3 +59,9 @@ def whoIs4(any: Any): String = any match {
           s"${duck} called Duck"
 }
 whoIs4(Duck("myDuck"))
+
+///--patterns in for--
+for (pair <- Map(1 -> "a", 2 -> "b") if pair._1 == 2)
+  yield pair._2
+for ((2, value) <- Map(1 -> "a", 2 -> "b"))
+  yield value
