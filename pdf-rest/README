@@ -1,3 +1,10 @@
+Todo:
+Use phantomjs executable instead and launch as a process.?
+challange: setup phantom js parameters and .js as input params
+1. The wkhtmltopdf is installed and in path (~/bin)
+either install via sh during deploy or package as part of jar
+
+
 This is a  Play application
 =================================
 
