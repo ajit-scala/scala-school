@@ -1,4 +1,4 @@
-# my-scala-schoolp
+# my-scala-school
 ##scala projects intro
 * pdf-rest : Prrof of concept project to generate pdf in play scala.
 * lambda-demo: scala code to write a AWS lambda fuction
