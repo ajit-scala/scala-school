@@ -1,0 +1,42 @@
+/RUNNING_PID
+/logs/
+/project/*-shim.sbt
+/project/project/
+/project/target/
+/target/
+
+
+ass
+*.log
+.DS_Store
+.idea_modules
+*.swp
+
+# sbt specific
+.cache
+.history
+.lib/
+dist/*
+target/
+lib_managed/
+src_managed/
+project/boot/
+project/plugins/project/
+
+# Scala-IDE specific
+.scala_dependencies
+.worksheet
+.idea
+deploy/.bundle
+deploy/vendor
+categorized-output
+dynamodb-dump
+
+# Spacemacs
+.ensime
+.#*
+
+.bundle
+
+# Project specific
+as24local.db
