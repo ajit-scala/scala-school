@@ -63,7 +63,7 @@ def writeToFile(r:Response): Unit = {
   writer.write(r.name+"\n")
     writer.close()
   }
-  def main(args: Array[String]): Unit = {
+  def main1(args: Array[String]): Unit = {
     val ssc = StreamingContext.getOrCreate("~/tmp/cats-spark", getContext)
     ssc.start()
     ssc.awaitTermination()

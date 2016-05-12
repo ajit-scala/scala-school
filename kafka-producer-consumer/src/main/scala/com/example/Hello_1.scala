@@ -31,13 +31,9 @@ object Hello1 {
 
     val sparkConf = new SparkConf().setAppName("DirectKafkaWordCount").setMaster("local[*]")
     val ssc = new StreamingContext(sparkConf, Seconds(5))
-    KafkaUtils.createDirectStream[String,String,StringDecoder, StringDecoder, Response](ssc, kafkaParams ,Map(TopicAndPartition(topics,1) ->1L),
-      x=>messageHandler(x)).foreachRDD((r,t)=>writeToFile(r,t)) //saveAsTextFiles("pp","txt")
-//    messages map {
-//      //case (key, json) => writeToFile(json)
-//      case r:Response => writeToFile(r.toString())
-//      case _ => writeToFile("none found")
-//    }
+    KafkaUtils.createDirectStream[String,String,StringDecoder, StringDecoder](ssc, kafkaParams ,topicsSet) foreachRDD {
+      rdd=> rdd.foreach(r=>writeToFile(r))
+    }
 
 
 //    val lines = messages.map(_._2)
@@ -53,12 +49,17 @@ object Hello1 {
     println("Hello, world - finish!")
     ssc
   }
-def writeToFile(r:RDD[Response], t:org.apache.spark.streaming.Time): Unit = {
-  val writer = new FileWriter("/home/ajit/tmp/test123.txt",true)
-  r.map(x=>writer.write(x.name))
+def writeToFile(r:Response): Unit = {
+    val writer = new FileWriter("/home/ajit/tmp/test123.txt",true)
+    writer.write(r.name)
     writer.close()
   }
-  def main1(args: Array[String]): Unit = {
+  def writeToFile(r:(String,String)): Unit = {
+    val writer = new FileWriter("/home/ajit/tmp/test123.txt",true)
+    writer.write(s"${r._1}  ${r._2}\n")
+    writer.close()
+  }
+  def main(args: Array[String]): Unit = {
     val ssc = StreamingContext.getOrCreate("~/tmp/cats-spark", getContext)
     ssc.start()
     ssc.awaitTermination()
