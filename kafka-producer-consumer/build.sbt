@@ -16,7 +16,8 @@ val sparkStreamingDependencies = Seq(
 // Uncomment to use Akka
 //libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.3.11"
 val awsDependencies = Seq(
-  "com.amazonaws" % "aws-java-sdk-s3" % awsVersion
+  "com.amazonaws" % "aws-java-sdk-s3" % awsVersion,
+  "com.amazonaws" % "aws-java-sdk-dynamodb" % awsVersion
 )
 
 libraryDependencies ++= Seq(
@@ -29,7 +30,8 @@ libraryDependencies ++= Seq(
   "net.jcazevedo" %% "moultingyaml" % "0.2", // yaml parsing
   "org.scalactic" %% "scalactic" % "2.2.6",
   "com.typesafe" % "config" % "1.3.0",
-  "org.mockito" % "mockito-all" % "1.10.19" % "test"
+  "org.mockito" % "mockito-all" % "1.10.19" % "test",
+  "com.typesafe.play" %% "play-json" % "2.3.4"
 ) ++ awsDependencies ++ sparkStreamingDependencies
 
 dependencyOverrides ++= Set(
