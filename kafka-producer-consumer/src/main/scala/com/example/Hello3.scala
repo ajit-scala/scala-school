@@ -96,7 +96,7 @@ def writeToFile(r:Response): Unit = {
           new KeySchemaElement("ArticleId", KeyType.RANGE)), //Sort key
         asList(
           new AttributeDefinition("ClassifiedGuid", ScalarAttributeType.S),
-          new AttributeDefinition("VehicleId", ScalarAttributeType.S)),
+          new AttributeDefinition("ArticleId", ScalarAttributeType.S)),
         new ProvisionedThroughput(10L, 10L));
       table.waitForActive();
       println("Success.  Table status: " + table.getDescription().getTableStatus());
