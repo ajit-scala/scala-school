@@ -27,7 +27,7 @@ object Hello3 {
     .withEndpoint("http://localhost:8000");
 
   val dynamoDB:DynamoDB  = new DynamoDB(client);
-  val tableName:String  = "Movies";
+  val tableName:String  = "CarHistoryClassifiedDataTable";
   val table:Table  = dynamoDB.getTable(tableName);
 
   def messageHandler(messageAndMetadata: MessageAndMetadata[String,String]):Response = {
@@ -78,25 +78,25 @@ def writeToFile(r:Response): Unit = {
                                  """)
 
   table.putItem(new Item()
-    .withPrimaryKey("year", 1964, "title", cnt.toString() + "_"+r.name)
+    .withPrimaryKey("ClassifiedGuid", "1964"+cnt.toString(), "VehicleId", cnt.toString() + "_"+r.name)
     .withJSON("info", json.toString()));
   }
   def main(args: Array[String]): Unit = {
-   // createTable()
-    val ssc = StreamingContext.getOrCreate("~/tmp/cats-spark", getContext)
-    ssc.start()
-    ssc.awaitTermination()
+    createTable()
+//    val ssc = StreamingContext.getOrCreate("~/tmp/cats-spark", getContext)
+//    ssc.start()
+//    ssc.awaitTermination()
   }
 
   def createTable(): Unit ={
       println("Attempting to create table; please wait...");
       val table:Table  = dynamoDB.createTable(tableName,
         asList(
-          new KeySchemaElement("year", KeyType.HASH),  //Partition key
-          new KeySchemaElement("title", KeyType.RANGE)), //Sort key
+          new KeySchemaElement("ClassifiedGuid", KeyType.HASH),  //Partition key
+          new KeySchemaElement("ArticleId", KeyType.RANGE)), //Sort key
         asList(
-          new AttributeDefinition("year", ScalarAttributeType.N),
-          new AttributeDefinition("title", ScalarAttributeType.S)),
+          new AttributeDefinition("ClassifiedGuid", ScalarAttributeType.S),
+          new AttributeDefinition("VehicleId", ScalarAttributeType.S)),
         new ProvisionedThroughput(10L, 10L));
       table.waitForActive();
       println("Success.  Table status: " + table.getDescription().getTableStatus());
