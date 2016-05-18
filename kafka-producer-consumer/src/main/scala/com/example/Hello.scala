@@ -11,11 +11,11 @@ import java.io._
 import kafka.common.TopicAndPartition
 import kafka.message.MessageAndMetadata
 import org.apache.spark.rdd.RDD
-case class Response(name:String)
+case class Response(name:String,offset:Long)
 object Hello {
 
   def messageHandler(messageAndMetadata: MessageAndMetadata[String,String]):Response = {
-    Response(s"${messageAndMetadata.message()}  ${messageAndMetadata.key()}")
+    Response(s"${messageAndMetadata.message()}  ${messageAndMetadata.key()}",offset = messageAndMetadata.offset)
   }
 
   val partition2: Int = 2
@@ -63,7 +63,7 @@ def writeToFile(r:Response): Unit = {
   writer.write(r.name+"\n")
     writer.close()
   }
-  def main(args: Array[String]): Unit = {
+  def main1(args: Array[String]): Unit = {
     val ssc = StreamingContext.getOrCreate("~/tmp/cats-spark", getContext)
     ssc.start()
     ssc.awaitTermination()

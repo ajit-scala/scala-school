@@ -26,21 +26,21 @@ object Hello3 {
   val client:AmazonDynamoDBClient  = new AmazonDynamoDBClient(new BasicAWSCredentials("fake", "fake"))
     .withEndpoint("http://localhost:8000");
 
-  val dynamoDB:DynamoDB  = new DynamoDB(client);
-  val tableName:String  = "CarHistoryClassifiedDataTable";
-  val table:Table  = dynamoDB.getTable(tableName);
+  val dynamoDB:DynamoDB  = new DynamoDB(client)
+  val tableName:String  = "CarHistoryClassifiedDataTable"//"CarHistoryClassifiedDataTable"
+  val table:Table  = dynamoDB.getTable(tableName)
 
   def messageHandler(messageAndMetadata: MessageAndMetadata[String,String]):Response = {
-    Response(s"${messageAndMetadata.message()}  ${messageAndMetadata.key()}")
+    Response(s"${messageAndMetadata.message()}  ${messageAndMetadata.key()} offset:${messageAndMetadata.offset}",offset = messageAndMetadata.offset)
   }
 
-  val partition2: Int = 2
-  val partition1: Int = 1
+  val partition2: Int = 1
+  val partition1: Int = 0
 
   def getContext(): StreamingContext = {
     println("Hello, world!")
 
-    val Array(brokers, topics) = Array("localhost:9092","test2")
+    val Array(brokers, topics) = Array("localhost:9092","test")
     val topicsSet = topics.split(",").toSet
     val kafkaParams = Map[String, String]("metadata.broker.list" -> brokers)
 
@@ -49,7 +49,9 @@ object Hello3 {
 
     val sparkConf = new SparkConf().setAppName("DirectKafkaWordCount").setMaster("local[*]")
     val ssc = new StreamingContext(sparkConf, Seconds(5))
-    KafkaUtils.createDirectStream[String,String,StringDecoder, StringDecoder, Response](ssc, kafkaParams ,Map(TopicAndPartition(topics,partition1) ->1L/*,TopicAndPartition(topics,partition2) ->1L*/),
+    val topicsMap = Map(TopicAndPartition(topics,partition1) ->0L,TopicAndPartition(topics,partition2) ->0L)
+
+    KafkaUtils.createDirectStream[String,String,StringDecoder, StringDecoder, Response](ssc, kafkaParams ,topicsMap,
       x=>messageHandler(x))  foreachRDD {       //.foreachRDD((r,t)=>writeToFile(r,t)) //saveAsTextFiles("pp","txt")
         rdd=> rdd.foreach(r=>writeToFile(r))
     }
@@ -77,15 +79,18 @@ def writeToFile(r:Response): Unit = {
 }
                                  """)
 
+  val s= s"""{  "cnt" : "$cnt"  }"""
+  val json2: JsValue = Json.parse(s)
+
   table.putItem(new Item()
-    .withPrimaryKey("ClassifiedGuid", "1964"+cnt.toString(), "VehicleId", cnt.toString() + "_"+r.name)
-    .withJSON("info", json.toString()));
+    .withPrimaryKey("ClassifiedGuid", r.name, "ArticleId",  r.offset.toString())
+    .withJSON("info", json2.toString()));
   }
   def main(args: Array[String]): Unit = {
-    createTable()
-//    val ssc = StreamingContext.getOrCreate("~/tmp/cats-spark", getContext)
-//    ssc.start()
-//    ssc.awaitTermination()
+    //createTable()
+    /*val ssc = StreamingContext.getOrCreate("~/tmp/cats-spark", getContext)
+    ssc.start()
+    ssc.awaitTermination()*/
   }
 
   def createTable(): Unit ={
