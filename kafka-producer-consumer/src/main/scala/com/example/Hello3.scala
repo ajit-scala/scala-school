@@ -27,7 +27,7 @@ object Hello3 {
     .withEndpoint("http://localhost:8000");
 
   val dynamoDB:DynamoDB  = new DynamoDB(client)
-  val tableName:String  = "CarHistoryClassifiedDataTable"//"CarHistoryClassifiedDataTable"
+  val tableName:String  = "CarHistoryClassifiedData"//"CarHistoryClassifiedDataTable"
   val table:Table  = dynamoDB.getTable(tableName)
 
   def messageHandler(messageAndMetadata: MessageAndMetadata[String,String]):Response = {
@@ -40,7 +40,7 @@ object Hello3 {
   def getContext(): StreamingContext = {
     println("Hello, world!")
 
-    val Array(brokers, topics) = Array("localhost:9092","test")
+    val Array(brokers, topics) = Array("localhost:9092","t1")
     val topicsSet = topics.split(",").toSet
     val kafkaParams = Map[String, String]("metadata.broker.list" -> brokers)
 
@@ -83,14 +83,14 @@ def writeToFile(r:Response): Unit = {
   val json2: JsValue = Json.parse(s)
 
   table.putItem(new Item()
-    .withPrimaryKey("ClassifiedGuid", r.name, "ArticleId",  r.offset.toString())
+    .withPrimaryKey("ClassifiedGuid", r.name, "ArticleId",  r.offset)
     .withJSON("info", json2.toString()));
   }
   def main(args: Array[String]): Unit = {
     //createTable()
-    /*val ssc = StreamingContext.getOrCreate("~/tmp/cats-spark", getContext)
+    val ssc = StreamingContext.getOrCreate("~/tmp/cats-spark", getContext)
     ssc.start()
-    ssc.awaitTermination()*/
+    ssc.awaitTermination()
   }
 
   def createTable(): Unit ={
@@ -101,7 +101,7 @@ def writeToFile(r:Response): Unit = {
           new KeySchemaElement("ArticleId", KeyType.RANGE)), //Sort key
         asList(
           new AttributeDefinition("ClassifiedGuid", ScalarAttributeType.S),
-          new AttributeDefinition("ArticleId", ScalarAttributeType.S)),
+          new AttributeDefinition("ArticleId", ScalarAttributeType.N)),
         new ProvisionedThroughput(10L, 10L));
       table.waitForActive();
       println("Success.  Table status: " + table.getDescription().getTableStatus());
