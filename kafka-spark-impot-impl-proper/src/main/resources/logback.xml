@@ -1,0 +1,17 @@
+<configuration>
+    <!-- swallow logbacks status messages to get rid of some console clutter -->
+    <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
+
+    <logger name="org.drools" level="error"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="OFF">
+        <appender-ref ref="STDOUT" />
+    </root>
+
+</configuration>

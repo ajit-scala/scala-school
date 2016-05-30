@@ -1,0 +1,34 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    autocanary24 (0.2.0)
+      autostacker24 (~> 2)
+      aws-sdk-core (~> 2)
+    autostacker24 (2.0.1)
+      aws-sdk-core (~> 2)
+      json (~> 1.8)
+      json_pure (~> 1.8)
+    aws-sdk (2.3.7)
+      aws-sdk-resources (= 2.3.7)
+    aws-sdk-core (2.3.7)
+      jmespath (~> 1.0)
+    aws-sdk-resources (2.3.7)
+      aws-sdk-core (= 2.3.7)
+    jmespath (1.2.4)
+      json_pure (>= 1.8.1)
+    json (1.8.3)
+    json_pure (1.8.3)
+    rake (11.1.2)
+
+PLATFORMS
+  ruby
+  x86-mingw32
+
+DEPENDENCIES
+  autocanary24
+  aws-sdk
+  json
+  rake
+
+BUNDLED WITH
+   1.11.2

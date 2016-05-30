@@ -1,0 +1,106 @@
+require 'rubygems'
+require 'bundler/setup'
+require 'autostacker24'
+require 'base64'
+require 'aws-sdk'
+
+Aws.use_bundled_cert!
+
+
+SERVICE  = 'carhistory-classified-import'
+VERSION  = ENV['VERSION'] || ENV['GO_PIPELINE_LABEL']
+SECRET   = ENV['SECRET'] || ENV['GO_APPLICATION_SECRET']
+SANDBOX  = ENV['SANDBOX'] || ENV['GO_JOB_NAME'].nil? && `whoami`.strip
+STACK    = SANDBOX ? "#{SANDBOX}-#{SERVICE}" : SERVICE
+GLOBAL   = ENV['GLOBAL'] || 'global'
+TEMPLATE = 'stack.yaml'
+TABLENAME = SANDBOX ? "#{SANDBOX}-CarHistoryClassifiedData" : "CarHistoryClassifiedData"
+KAFKAPARTIONOFFSETSTABLENAME = SANDBOX ? "#{SANDBOX}-CarHistoryKafkaPartitionOffsets" : "CarHistoryKafkaPartitionOffsets"
+
+TAGS     = [
+  { key: 'segment', value: 'ConMon' },
+  { key: 'team', value: 'ConMon' },
+  { key: 'usecase', value: 'CarHistoryReport' },
+  { key: 'service', value: SERVICE }
+]
+
+def kms_decrypt_credentials(cipher_text)
+  kms = Aws::KMS::Client.new
+  kms.decrypt({ciphertext_blob: Base64.decode64(cipher_text)}).plaintext
+end
+
+def capacity_alert(capacity)
+  (capacity * 0.85 * 300).round(0) # cloudwatch values are summed up for 5 minutes
+end
+
+OPSGENIE_KEY = kms_decrypt_credentials('CiA2G5kHM0w3MXrzwTqap0iZUeGHUUg/yKA/JIdBgRZmJRKsAQEBAgB4NhuZBzNMNzF688E6mqdImVHhh1FIP8igPySHQYEWZiUAAACDMIGABgkqhkiG9w0BBwagczBxAgEAMGwGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMIH5qqPP1gFtdaw+/AgEQgD8/MyQzyXgmDv/SFDZjVlHGnUOS9KSyhaEHzzBQBbZAt9u4oEGxG0wUAC6bD8AeSMqIYISGzXHd7YglkxEkThY=')
+
+desc 'create or update stack'
+task :create_or_update do
+  fail('VERSION missing') unless VERSION
+
+  prod       = Stacker.get_stack_output(GLOBAL)[:AccountName] =~ /as24prod/i
+  account_id = prod ? '037251718545' : '544725753551'
+
+  kafa_client_security_group =  Stacker.get_stack_outputs("kafka-client")[:KafkaClientSecurityGroup]
+  zookeeper_client_security_group =  Stacker.get_stack_outputs("zookeeper-client")[:ZooKeeperClientSecurityGroup]
+  as24prod = Stacker.get_stack_output(GLOBAL)[:AccountName] =~ /as24prod/i
+
+  read_capacity = as24prod ? 1600 : 5
+  write_capacity= as24prod ? 400 : 10
+  read_capacity_meta = as24prod ? 1 : 1
+  write_capacity_meta = as24prod ? 1 : 1
+
+  parameters = {
+      AmiId:                           ENV['AMI_ID'] || File.read('ami.txt'),
+      AuthRole:                        ENV['AUTH_ROLE'] || SERVICE,
+      InstanceType:                    prod ? 'm4.xlarge' : 't2.micro',
+      Service:                         SERVICE,
+      Version:                         VERSION,
+      MinimumNumberOfServers:          1,
+      MaximumNumberOfServers:          2,
+      SoftLimitMaximumNumberOfServers: 1,
+      OpsGenieKey:                     OPSGENIE_KEY,
+      SparkVersion:                    '1.6.1',
+      SparkNumberOfNodes:              2,
+      KafkaSecurityGroup:              kafa_client_security_group,
+      ZookeeperSecurityGroup:          zookeeper_client_security_group,
+      ReadCapacity: read_capacity,
+      WriteCapacity: write_capacity,
+      ReadCapacityAlert: capacity_alert(read_capacity),
+      ReadCapacityMeta: read_capacity_meta,
+      WriteCapacityMeta: write_capacity_meta,
+      ReadCapacityAlertMeta: capacity_alert(read_capacity_meta),
+      CarHistoryClassifiedTableName: TABLENAME,
+      CarHistoryKafkaPartitionOffsetsTableName: KAFKAPARTIONOFFSETSTABLENAME
+  }
+  puts "<----------------------------------------Started creating stack #{STACK}------------------------------------------------------------>"
+  Stacker.create_or_update_stack(STACK, TEMPLATE, parameters, GLOBAL, TAGS)
+  puts "<----------------------------------------Finished creating stack #{STACK}------------------------------------------------------------>\n\n"
+end
+
+desc 'delete stack'
+task :delete do
+  Stacker.delete_stack(STACK)
+end
+
+desc 'deploy service'
+task :deploy => [:create_or_update] do
+end
+
+desc 'validate template'
+task :validate do
+  Stacker.validate_template(TEMPLATE)
+end
+
+desc 'dump template'
+task :dump do
+  puts JSON.pretty_generate(JSON(Stacker.template_body(TEMPLATE)))
+end
+
+task :default do
+  puts
+  puts 'Use one of the available tasks:'
+  puts "Current stack is #{STACK}\n"
+  system 'rake -T'
+end
