@@ -15,7 +15,7 @@ case class Response1(name:String)
 object Hello1 {
 
   def messageHandler(messageAndMetadata: MessageAndMetadata[String,String]):Response = {
-    Response(messageAndMetadata.toString())
+    Response(messageAndMetadata.toString(),offset = messageAndMetadata.offset)
   }
 
   def getContext(): StreamingContext = {
@@ -59,7 +59,7 @@ def writeToFile(r:Response): Unit = {
     writer.write(s"${r._1}  ${r._2}\n")
     writer.close()
   }
-  def main(args: Array[String]): Unit = {
+  def main2(args: Array[String]): Unit = {
     val ssc = StreamingContext.getOrCreate("~/tmp/cats-spark", getContext)
     ssc.start()
     ssc.awaitTermination()

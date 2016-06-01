@@ -1,0 +1,488 @@
+# autostacker24 CloudFormation YAML template
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CarHistory Kafka Consumer for Classified Data
+
+Parameters:
+  AccountName:
+    Description: The name of the account, e.g. 'as24dev'
+    Type: String
+    AllowedValues:
+    - as24prod
+    - as24dev
+  AccountSubDomain:
+    Description: The subdomain of the account, e.g. 'aws'
+    Type: String
+  AmiId:
+    Description: Id of existing AMI for service instances
+    Type: AWS::EC2::Image::Id
+  AuthRole:
+    Description: IAM role used to S3 authentication
+    Type: String
+  AvailabilityZones:
+    Description: The list of AvailabilityZones for your Virtual Private Cloud (VPC)
+    Type: List<AWS::EC2::AvailabilityZone::Name>
+  InstanceType:
+    Description: Instance type of service application servers
+    Type: String
+  LoadbalancerSecurityGroup:
+    Description: Security group for the loadbalancer
+    Type: AWS::EC2::SecurityGroup::Id
+  MaximumNumberOfServers:
+    Description: Maximum number of servers to have in the autoscaling group
+    Type: Number
+  MinimumNumberOfServers:
+    Description: Minimum number of servers to have in the autoscaling group
+    Type: Number
+  RunbookUrl:
+    Description: Location of runbooks, which holds procedures for handling alerts
+    Type: String
+    Default: https://github.com/AutoScout24/tatsu-service/blob/master/runbooks
+  Service:
+    Description: Name of the service.
+    Type: String
+  ServiceSecurityGroup:
+    Description: Security group for the service instance
+    Type: AWS::EC2::SecurityGroup::Id
+  KafkaSecurityGroup:
+    Description: Security group for the kafka client
+    Type: String
+  ZookeeperSecurityGroup:
+    Description: Security group for the zookeeper client
+    Type: String
+  ServiceSubnets:
+    Description: Subnets where service instances should be launched.
+    Type: List<AWS::EC2::Subnet::Id>
+  SoftLimitMaximumNumberOfServers:
+    Description: Maximum number of servers that should be used
+    Type: Number
+  Version:
+    Description: Version of the service to launch.
+    Type: String
+  OpsGenieKey:
+    Description: API key for OpsGenie integration
+    Type: String
+    NoEcho: true
+  SparkVersion:
+    Description: Version of Spark bundle
+    Type: String
+  SparkNumberOfNodes:
+    Description: The number of nodes to set up in the spark cluster
+    Type: Number
+  ReadCapacity:
+    Description: Dynamo DB Read Capacity Units,
+    Type: String
+  WriteCapacity:
+    Description: Dynamo DB Write Capacity Units,
+    Type: String
+  ReadCapacityAlert:
+    Description: Dynamo DB Read Capacity Alert,
+    Type: Number
+  ReadCapacityMeta:
+    Description: Dynamo DB Read Capacity Units,
+    Type: String
+  WriteCapacityMeta:
+    Description: Dynamo DB Write Capacity Units,
+    Type: String
+  ReadCapacityAlertMeta:
+    Description: Dynamo DB Read Capacity Alert,
+    Type: Number
+  CarHistoryClassifiedTableName:
+    Description: Name of the CarHistory classified data table,
+    Type: String
+  CarHistoryKafkaPartitionOffsetsTableName:
+    Description: Name of the table where we persist kafka partion offsets for data import,
+    Type: String
+
+Conditions:
+  FakeDependencies:
+    Fn::Equals:
+    - '@AccountName'
+    - as24dev
+
+Resources:
+  CarHistoryClassifiedDataTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: '@CarHistoryClassifiedTableName'
+      AttributeDefinitions:
+        - AttributeName: 'ClassifiedGuid'
+          AttributeType: 'S'
+        - AttributeName: 'ArticleId'
+          AttributeType: 'N'
+      KeySchema:
+        - AttributeName: 'ClassifiedGuid'
+          KeyType: 'HASH'
+        - AttributeName: 'ArticleId'
+          KeyType: 'RANGE'
+      ProvisionedThroughput:
+        ReadCapacityUnits: '@ReadCapacity'
+        WriteCapacityUnits: '@WriteCapacity'
+  CarHistoryKafkaPartitionOffsetsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: '@CarHistoryKafkaPartitionOffsetsTableName'
+      AttributeDefinitions:
+        - AttributeName: 'Topic'
+          AttributeType: 'S'
+        - AttributeName: 'PartitionId'
+          AttributeType: 'N'
+      KeySchema:
+        - AttributeName: 'Topic'
+          KeyType: 'HASH'
+        - AttributeName: 'PartitionId'
+          KeyType: 'RANGE'
+      ProvisionedThroughput:
+        ReadCapacityUnits: '@ReadCapacity'
+        WriteCapacityUnits: '@WriteCapacity'
+  Loadbalancer:
+    Type: AWS::ElasticLoadBalancing::LoadBalancer
+    Properties:
+      AccessLoggingPolicy:
+        EmitInterval: 5
+        Enabled: 'true'
+        S3BucketName: as24-elb-logs
+        S3BucketPrefix: '@AccountName/@AWS::StackName'
+      CrossZone: 'true'
+      HealthCheck:
+        Target: 'HTTP:9000/metrics/master/json/'
+        HealthyThreshold: 2
+        UnhealthyThreshold: 3
+        Interval: 20
+        Timeout: 10
+      LoadBalancerName: 'carhistory-cl-imp-elb'
+      Listeners:
+      - InstancePort: '9000'
+        InstanceProtocol: HTTP
+        LoadBalancerPort: '80'
+        Protocol: HTTP
+      ConnectionDrainingPolicy:
+        Enabled: true
+        Timeout: 60
+      SecurityGroups:
+      - '@LoadbalancerSecurityGroup'
+      Subnets: '@ServiceSubnets'
+
+  AutoScalingGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      AvailabilityZones: '@AvailabilityZones'
+      VPCZoneIdentifier: '@ServiceSubnets'
+      LaunchConfigurationName: '@LaunchConfig'
+      MinSize: '@MinimumNumberOfServers'
+      DesiredCapacity: '@MinimumNumberOfServers'
+      MaxSize: '@MaximumNumberOfServers'
+      HealthCheckGracePeriod: '600'
+      HealthCheckType: ELB
+      LoadBalancerNames:
+      - '@Loadbalancer'
+      MetricsCollection:
+      - Granularity: 1Minute
+        Metrics:
+        - GroupInServiceInstances
+      Tags:
+      - Key: Name
+        Value: '@Service'
+        PropagateAtLaunch: 'true'
+    CreationPolicy: {}
+    UpdatePolicy:
+      AutoScalingRollingUpdate:
+        MinInstancesInService: '@MinimumNumberOfServers'
+        MaxBatchSize: '2'
+        PauseTime: PT10M
+        SuspendProcesses:
+        - AlarmNotification
+        WaitOnResourceSignals: 'true'
+
+  LaunchConfig:
+    Type: AWS::AutoScaling::LaunchConfiguration
+    Metadata:
+      AWS::CloudFormation::Authentication:
+        S3AccessCreds:
+          type: s3
+          buckets:
+          - as24-artifacts-@AWS::Region
+          roleName: '@AuthRole'
+      AWS::CloudFormation::Init:
+        configSets:
+          service_configuration:
+          - user_config
+          - fluentd_config
+          - install_kafka
+          - install_spark
+          - download_artefact
+          - config_spark
+          - start_spark
+          - spark_submit_categorizer
+        user_config:
+          commands:
+            add_app_user:
+              command: useradd -U -d /@Service-@Version @Service -s /bin/bash
+        fluentd_config:
+          files:
+            /opt/fluentd/conf.d/service.conf:
+              content: |
+                <source>
+                  type tail
+                  format multiline
+                  format_firstline /^\d{1,2}\/\d{1,2}\/\d{1,2} \d{1,2}:\d{1,2}:\d{1,2}.*/
+                  format1 /^(?<time>\d{2}\/\d{2}\/\d{2} \d{2}:\d{1,2}:\d{1,2})\s*(?<log_level>\S*)\s*(?<message>.*)/
+                  path /var/log/spark/*master*.out
+                  pos_file /tmp/@Service-spark-master.POS
+                  refresh_interval 5
+                  tag system-logs.spark-master
+                  read_from_head true
+                </source>
+                <source>
+                  type tail
+                  format multiline
+                  format_firstline /^\d{1,2}\/\d{1,2}\/\d{1,2} \d{1,2}:\d{1,2}:\d{1,2}.*/
+                  format1 /^(?<time>\d{2}\/\d{2}\/\d{2} \d{2}:\d{1,2}:\d{1,2})\s*(?<log_level>\S*)\s*(?<message>.*)/
+                  path /var/log/spark/*worker*.out
+                  pos_file /tmp/@Service-spark-worker.POS
+                  refresh_interval 5
+                  tag system-logs.spark-worker
+                  read_from_head true
+                </source>
+                <source>
+                  type tail
+                  format multiline
+                  format_firstline /^\d{1,2}\/\d{1,2}\/\d{1,2} \d{1,2}:\d{1,2}:\d{1,2}.*/
+                  format1 /^(?<time>\d{2}\/\d{2}\/\d{2} \d{2}:\d{1,2}:\d{1,2})\s*(?<log_level>\S*)\s*(?<message>.*)/
+                  path /var/log/spark/spark.log
+                  pos_file /tmp/@Service-spark-driver.POS
+                  refresh_interval 5
+                  tag system-logs.spark
+                  read_from_head true
+                 </source>
+                  <filter system-logs.spark*>
+                    type record_transformer
+                    <record>
+                      log_level ${log_level}
+                    </record>
+                  </filter>
+                <source>
+                  type exec
+                  format json
+                  command ruby /spark_metrics.rb
+                  run_interval 10s
+                  tag system-logs.spark-metrics
+                </source>
+          commands:
+            start_fluentd:
+              command: |
+                if /sbin/initctl status fluentd | grep -q 'stop/waiting'; then
+                  /sbin/initctl start fluentd STACKNAME="$STACKNAME"
+                else
+                  /sbin/initctl reload fluentd STACKNAME="$STACKNAME"
+                fi
+              env:
+                STACKNAME: '@AWS::StackName'
+        install_kafka:
+          sources:
+            /: https://s3-@{AWS::Region}.amazonaws.com/as24-artifacts-@AWS::Region/@Service/kafka/kafka_2.11-0.9.0.1.tgz
+        install_spark:
+          sources:
+            cats-categorizer-spark: https://s3-@{AWS::Region}.amazonaws.com/as24-artifacts-@AWS::Region/@Service/@Service-spark-@SparkVersion-bin-hadoop2.6.tgz
+          commands:
+            0_move_spark_to_service_directory:
+              command: mv @Service-spark @Service-@Version/spark-@SparkVersion
+              cwd: /
+        download_artefact:
+          sources:
+            /: https://s3-@{AWS::Region}.amazonaws.com/as24-artifacts-@AWS::Region/@Service/@Service-@{Version}.tgz
+        config_spark:
+          commands:
+            0_move_spark_config_to_service_directory:
+              command: tar xvf @Service-spark-conf-@{Version}.tgz -C @Service-@Version/spark-@SparkVersion/conf
+              cwd: /
+            1_chown_service_directory:
+              command: chown -R @Service.@Service /@Service-@Version/
+            2_make_log_directory:
+              command: mkdir var/log/spark
+              cwd: /
+        start_spark:
+          commands:
+            0_smoketest_kafka:
+              command: ./kafka_smoketest.sh --account_subdomain @AccountSubDomain
+              cwd: /
+            1_start_spark_master:
+              command: sbin/start-master.sh
+              cwd: /@Service-@Version/spark-@SparkVersion
+            2_start_spark_slaves:
+              command: sbin/start-slave.sh spark://localhost:7077
+              cwd: /@Service-@Version/spark-@SparkVersion
+            3_smoketest_spark:
+              command: ./spark_smoketest.sh
+              cwd: /
+        spark_submit_categorizer:
+          commands:
+            0_spark_submit:
+              command: bin/spark-submit --class app.spark.Application --supervise --master spark://localhost:7077 --deploy-mode cluster /@Service-assembly-@{Version}.jar -Daccount-subdomain=@AccountSubDomain -Djava.net.preferIPv4Stack=true
+              cwd: /@Service-@Version/spark-@SparkVersion
+    Properties:
+      ImageId: '@AmiId'
+      InstanceType: '@InstanceType'
+      SecurityGroups:
+        - '@ServiceSecurityGroup'
+        - '@KafkaSecurityGroup'
+        - '@ZookeeperSecurityGroup'
+      IamInstanceProfile: '@AuthRole'
+      UserData:
+        Fn::Base64: |+
+          #!/bin/bash
+
+          VERSION="@Version"
+
+          /opt/aws/bin/cfn-init -v \
+            --stack @AWS::StackName \
+            --resource LaunchConfig \
+            --configsets service_configuration \
+            --region @AWS::Region
+
+          /opt/aws/bin/cfn-signal -e $? \
+            --stack @AWS::StackName \
+            --region @AWS::Region \
+            --resource AutoScalingGroup
+
+  CPUAlarmHigh:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: Scale-up if CPU > 50% for 5 minutes
+      MetricName: CPUUtilization
+      Namespace: AWS/EC2
+      Statistic: Average
+      Period: '300'
+      EvaluationPeriods: '1'
+      Threshold: '50'
+      Dimensions:
+      - Name: AutoScalingGroupName
+        Value: '@AutoScalingGroup'
+      ComparisonOperator: GreaterThanThreshold
+
+  CPUAlarmLow:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: Scale-down if CPU < 20% for 10 minutes
+      MetricName: CPUUtilization
+      Namespace: AWS/EC2
+      Statistic: Average
+      Period: '600'
+      EvaluationPeriods: '3'
+      Threshold: '20'
+      Dimensions:
+      - Name: AutoScalingGroupName
+        Value: '@AutoScalingGroup'
+      ComparisonOperator: LessThanThreshold
+
+  ELB5xxErrors:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: '@AccountName - Alarm if there are too many 5xx errors (@RunbookUrl/README.md#Elb5xxErrors)'
+      MetricName: HTTPCode_Backend_5XX
+      Namespace: AWS/ELB
+      Statistic: Sum
+      Period: '300'
+      EvaluationPeriods: '1'
+      Threshold: '2'
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      #AlarmActions:
+      #- '@OpsGenieTopic'
+      Dimensions:
+      - Name: LoadBalancerName
+        Value: '@Loadbalancer'
+
+  LatencyAlert:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: '@AccountName - Alarm if the service latency is too long (@RunbookUrl/README.md#LatencyAlert)'
+      MetricName: Latency
+      Namespace: AWS/ELB
+      Statistic: Average
+      Period: '300'
+      EvaluationPeriods: '1'
+      Threshold: '20'
+      ComparisonOperator: GreaterThanThreshold
+      #AlarmActions:
+      #- '@OpsGenieTopic'
+      Dimensions:
+      - Name: LoadBalancerName
+        Value: '@Loadbalancer'
+
+  SurgeQueueLengthAlert:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: '@AccountName - Alarm if the ELB receives more requests than
+        the backend can handle (@RunbookUrl/README.md#LatencyAlert)'
+      MetricName: SurgeQueueLength
+      Namespace: AWS/ELB
+      Statistic: Maximum
+      Period: '60'
+      EvaluationPeriods: '1'
+      Threshold: '1'
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      #AlarmActions:
+      #- '@OpsGenieTopic'
+      Dimensions:
+      - Name: LoadBalancerName
+        Value: '@Loadbalancer'
+
+  SpilloverCountAlert:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: '@AccountName - Alarm if the ELB drops requests because the
+        backend is overloaded (@RunbookUrl/README.md#LatencyAlert)'
+      MetricName: SpilloverCount
+      Namespace: AWS/ELB
+      Statistic: Sum
+      Period: '60'
+      EvaluationPeriods: '1'
+      Threshold: '1'
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      #AlarmActions:
+      #- '@OpsGenieTopic'
+      Dimensions:
+      - Name: LoadBalancerName
+        Value: '@Loadbalancer'
+
+  NotEnoughInstancesAlert:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: '@AccountName - Alarm if there are not enough instances (@RunbookUrl/README.md#NotEnoughInstancesAlert)'
+      MetricName: GroupInServiceInstances
+      Namespace: AWS/AutoScaling
+      Statistic: Minimum
+      Period: '300'
+      EvaluationPeriods: '1'
+      Threshold: '@MinimumNumberOfServers'
+      ComparisonOperator: LessThanThreshold
+      #AlarmActions:
+      #- '@OpsGenieTopic'
+      Dimensions:
+      - Name: AutoScalingGroupName
+        Value: '@AutoScalingGroup'
+
+  TooManyInstancesAlert:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: '@AccountName - Alarm if there are more instances than usual
+        (@RunbookUrl/README.md#TooManyInstancesAlert)'
+      MetricName: HealthyHostCount
+      Namespace: AWS/ELB
+      Statistic: Maximum
+      Period: '300'
+      EvaluationPeriods: '1'
+      Threshold: '@SoftLimitMaximumNumberOfServers'
+      ComparisonOperator: GreaterThanThreshold
+      #AlarmActions:
+      #- '@OpsGenieTopic'
+      Dimensions:
+      - Name: LoadBalancerName
+        Value: '@Loadbalancer'
+
+#  OpsGenieTopic:
+#    Type: AWS::SNS::Topic
+#    Properties:
+#      Subscription:
+#      - Endpoint: https://api.opsgenie.com/v1/json/cloudwatch?apiKey=@OpsGenieKey
+#        Protocol: https
+#      TopicName: '@AWS::StackName-opsgenie'

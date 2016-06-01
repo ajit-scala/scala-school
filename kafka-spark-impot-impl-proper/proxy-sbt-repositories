@@ -1,0 +1,11 @@
+[repositories]
+  local
+  as24-ivy-proxy-releases: https://nexus.tools.autoscout24.com/nexus/content/groups/ivy-releases/, [organization]/[module]/(scala_[scalaVersion]/)(sbt_[sbtVersion]/)[revision]/[type]s/[artifact](-[classifier]).[ext]
+  as24-maven-proxy-releases: https://nexus.tools.autoscout24.com/nexus/content/groups/public/
+
+  fallback-default-maven2: https://repo1.maven.org/maven2/
+  fallback-apache-snapshots: https://repository.apache.org/snapshots/
+  fallback-default-typesave-ivy: https://repo.typesafe.com/typesafe/ivy-releases/, [organization]/[module]/(scala_[scalaVersion]/)(sbt_[sbtVersion]/)[revision]/[type]s/[artifact](-[classifier]).[ext]
+  fallback-default-typesave-maven: https://repo.typesafe.com/typesafe/releases/
+  fallback-scala-sbt-community-ivy: https://repo.scala-sbt.org/scalasbt/sbt-plugin-releases/, [organization]/[module]/(scala_[scalaVersion]/)(sbt_[sbtVersion]/)[revision]/[type]s/[artifact](-[classifier]).[ext]
+  fallback-scalaz-stream: https://dl.bintray.com/scalaz/releases/
