@@ -40,3 +40,4 @@ dynamodb-dump
 
 # Project specific
 as24local.db
+dynamodb-local/
