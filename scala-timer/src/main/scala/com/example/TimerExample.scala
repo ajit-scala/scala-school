@@ -1,7 +1,7 @@
 package com.example
 
-object Hello {
-  def main(args: Array[String]): Unit = {
+object TimerExample {
+  def main1(args: Array[String]): Unit = {
     println("Hello, world!")
     Timer(2000) { println("Timer went off") }
     println("Hello, world end!")
