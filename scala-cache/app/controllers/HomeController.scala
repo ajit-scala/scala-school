@@ -14,15 +14,15 @@ import scala.concurrent.duration._
  * application's home page.
  */
 @Singleton
-class HomeController @Inject() (cache:CacheApi) extends Controller with EhCacheComponents{
+class HomeController @Inject() (cache:CacheApi) extends Controller {
 
   /**
-   * Create an Action to render an HTML page with a welcome message.
-   * The configuration in the `routes` file means that this method
-   * will be called when the application receives a `GET` request with
-   * a path of `/`.
-   */
-  def index2 = Action {
+    * Create an Action to render an HTML page with a welcome message.
+    * The configuration in the `routes` file means that this method
+    * will be called when the application receives a `GET` request with
+    * a path of `/`.
+    */
+  def index = Action {
     println(cache.get("date"))
 
     val cd = cache.getOrElse[Date]("date", 10.seconds) {
@@ -35,8 +35,8 @@ class HomeController @Inject() (cache:CacheApi) extends Controller with EhCacheC
 
     Ok(views.html.index("Your new application is ready." + cd))
   }
-
-
+}
+/*
 def index = Action {
   val t = new test(defaultCacheApi)
 
@@ -57,6 +57,6 @@ def index = Action {
     cd
   }
 
-}
+}*/
 
 

@@ -14,5 +14,6 @@ Json.toJson(e)
 case class Car(name:String, model:Seq[Model])
 implicit val carFormat = Json.format[Car]
 
-val c = Car("BMW", List(m,Model("X1",12))Json.toJson(c)
+val c = Car("BMW", List(m,Model("X1",12)))
+Json.toJson(c).toString()
 
