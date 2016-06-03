@@ -12,7 +12,7 @@ import java.util.concurrent.{Executors, ExecutorService}
 import java.util.Date
 
 object Hello2 {
-  def main(args: Array[String]): Unit = {
+  def main1(args: Array[String]): Unit = {
 
 
     val config = new Properties()

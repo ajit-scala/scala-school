@@ -21,12 +21,17 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="SBT: org.scala-lang:scala-library:2.11.7:jar" level="project" />
-    <orderEntry type="library" name="SBT: net.sf.ehcache:ehcache:2.9.0:jar" level="project" />
     <orderEntry type="library" scope="TEST" name="SBT: org.scalatest:scalatest_2.11:2.2.4:jar" level="project" />
-    <orderEntry type="library" scope="TEST" name="SBT: org.scala-lang.modules:scala-xml_2.11:1.0.2:jar" level="project" />
-    <orderEntry type="library" scope="TEST" name="SBT: org.scala-lang:scala-reflect:2.11.2:jar" level="project" />
-    <orderEntry type="library" name="SBT: org.slf4j:slf4j-api:1.7.21:jar" level="project" />
+    <orderEntry type="library" name="SBT: org.scala-lang:scala-reflect:2.11.8:jar" level="project" />
+    <orderEntry type="library" name="SBT: org.scala-lang:scala-library:2.11.8:jar" level="project" />
+    <orderEntry type="library" name="SBT: org.joda:joda-convert:1.7:jar" level="project" />
+    <orderEntry type="library" name="SBT: net.sf.ehcache:ehcache:2.10.0:jar" level="project" />
+    <orderEntry type="library" name="SBT: joda-time:joda-time:2.5:jar" level="project" />
+    <orderEntry type="library" name="SBT: javax.transaction:jta:1.1:jar" level="project" />
+    <orderEntry type="library" name="SBT: com.github.cb372:scalacache-ehcache_2.11:0.9.1:jar" level="project" />
+    <orderEntry type="library" name="SBT: com.github.cb372:scalacache-core_2.11:0.9.1:jar" level="project" />
     <orderEntry type="library" name="SBT: org.slf4j:slf4j-simple:1.7.21:jar" level="project" />
+    <orderEntry type="library" name="SBT: org.slf4j:slf4j-api:1.7.21:jar" level="project" />
+    <orderEntry type="library" scope="TEST" name="SBT: org.scala-lang.modules:scala-xml_2.11:1.0.2:jar" level="project" />
   </component>
 </module>

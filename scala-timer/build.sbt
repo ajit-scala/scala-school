@@ -15,3 +15,4 @@ libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.4" % "test"
 libraryDependencies += "net.sf.ehcache" % "ehcache" % "2.9.0"
 
 libraryDependencies +=  "org.slf4j" % "slf4j-simple" % "1.7.21"
+libraryDependencies += "com.github.cb372" %% "scalacache-ehcache" % "0.9.1"

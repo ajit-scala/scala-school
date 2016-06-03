@@ -1,14 +1,11 @@
 package com.example
 
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Element;
-
-case class Test(name:String)
-
+import net.sf.ehcache.Cache
+import net.sf.ehcache.CacheManager
+import net.sf.ehcache.Element
 
 object CacheExample {
-  def main(args: Array[String]): Unit = {
+  def main2(args: Array[String]): Unit = {
     println("Hello, world!")
     //1. Create a cache manager
     val cm:CacheManager  = CacheManager.getInstance()
