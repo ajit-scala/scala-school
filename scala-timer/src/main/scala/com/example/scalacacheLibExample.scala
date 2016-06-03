@@ -7,6 +7,7 @@ import scalacache.ScalaCache
 import scalacache.ehcache.EhcacheCache
 import concurrent.duration._
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
   * Created by ajit on 03.06.16.
@@ -22,20 +23,27 @@ object scalacacheLibExample {
     val cache:Cache  = cm.getCache("cache1")
     implicit val scalaCache = ScalaCache(EhcacheCache(cache))
 
-    scalaCache.cache.put("t2", Test("Vinit"), Option(20.seconds))
+    scalaCache.cache.put("t2", Test("Vinit"), Option(15 seconds))
     println("::Results::")
 
-    val x: Future[Option[Test]] = scalaCache.cache.get[Test]("t2")
-    val res: Future[Option[Test]] = for{
-      xx<-x
-    } yield xx
-    println()
+    var x: Future[Option[Test]] = scalaCache.cache.get[Test]("t2")
 
-//    Thread.sleep(20*1000)
-//    println(scalaCache.cache.get("t2"))
-//
-//    Thread.sleep(20*1000)
-//    println(scalaCache.cache.get("t2"))
+
+    x.onSuccess {
+      case xx => println(xx.getOrElse("noting "))
+    }
+    Thread.sleep(10 * 1000)
+     x = scalaCache.cache.get[Test]("t2")
+
+    x.onSuccess {
+      case xx => println(xx.getOrElse("noting "))
+    }
+Thread.sleep(10 * 1000)
+    x= scalaCache.cache.get[Test]("t2")
+
+    x.onSuccess {
+      case xx => println(xx.getOrElse("noting "))
+    }
 
 
   }
