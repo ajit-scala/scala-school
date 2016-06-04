@@ -19,7 +19,7 @@ case class Test(name:String)
 
 
 object scalacacheLibExample {
-  def main(args: Array[String]): Unit = {
+  def main3(args: Array[String]): Unit = {
     val cm:CacheManager  = CacheManager.getInstance()
 
     //3. Get a cache called "cache1"
