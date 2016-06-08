@@ -3,14 +3,15 @@ package com.example
 import java.io.Serializable
 
 import com.sun.net.httpserver.Authenticator.Success
-import net.sf.ehcache.{Cache, CacheManager}
+import net.sf.ehcache.event.CacheEventListener
+import net.sf.ehcache.{Cache, CacheManager, Ehcache, Element}
 
 import scalacache.ScalaCache
 import scalacache.ehcache.EhcacheCache
 import concurrent.duration._
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.util.{Failure, Success}
+import util.{Failure, Success}
 
 /**
   * Created by ajit on 03.06.16.
@@ -19,14 +20,16 @@ case class Test(name:String)
 
 
 object scalacacheLibExample {
-  def main3(args: Array[String]): Unit = {
+  def main(args: Array[String]): Unit = {
     val cm:CacheManager  = CacheManager.getInstance()
 
     //3. Get a cache called "cache1"
     val cache:Cache  = cm.getCache("cache1")
     implicit val scalaCache = ScalaCache(EhcacheCache(cache))
+    cache.getCacheEventNotificationService.registerListener(abc())
 
     scalaCache.cache.put("t2", Test("Vinit"), Option(3 seconds))
+
     println("::Results::")
 
     var x: Future[Option[Test]] = scalaCache.cache.get[Test]("t2")
@@ -36,7 +39,7 @@ object scalacacheLibExample {
  x.map(opt=>opt.get).onSuccess{//best one ? :) map returns Future of test from futtue of option[test}
    case res => println(res)
  }
-
+/*
     Thread.sleep(2 * 1000)
 
 
@@ -69,6 +72,27 @@ object scalacacheLibExample {
       case xx => println(xx.getOrElse("noting "))
     }
 
-
+*/
   }
+}
+case class abc() extends CacheEventListener {
+  override def notifyElementExpired(ehcache: Ehcache, element: Element): Unit = {
+    println("notifyElementExpired an element " + element)
+  }
+
+  override def notifyElementEvicted(ehcache: Ehcache, element: Element): Unit = {}
+
+  override def notifyRemoveAll(ehcache: Ehcache): Unit = {}
+
+  override def notifyElementPut(ehcache: Ehcache, element: Element): Unit = {
+    println("added an element " + element)
+  }
+
+  override def dispose(): Unit = {}
+
+  override def notifyElementRemoved(ehcache: Ehcache, element: Element): Unit = {
+    println("notifyElementRemoved an element " + element)
+  }
+
+  override def notifyElementUpdated(ehcache: Ehcache, element: Element): Unit = {}
 }
