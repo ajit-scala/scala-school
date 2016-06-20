@@ -1,15 +1,9 @@
 # Kafka on AWS Cluster
 
-**WARNING**
-
-Don't use Kafka as a "Source of Truth" database as this moment. We don't do
-backups of your data! In case of a disaster you need to re-pump data into Kafka
-from a Source of Truth. Also make sure that you can serve stale data during the
-re-pump because this can take a while.
 
 ## Version Info
 
-* The used Kafka version is 0.9.0.1. See the [rakefile](/deploy/rakefile#L17)
+* The used Kafka version is 0.9.0.1. 
   for up-to-date version infos.
 
 ## Using and Connecting
