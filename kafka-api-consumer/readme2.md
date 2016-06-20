@@ -17,20 +17,20 @@
 
 * The ZooKeeper connection string can be created using
   `host zookeeper.aws.ajitchahal.com | awk -vORS=:2181, '{ print $4 }' | sed 's/,$//'`
-  for as24dev account, and
+  for ajitdev account, and
   `host zookeeper.a.ajitchahal.com | awk -vORS=:2181, '{ print $4 }' | sed 's/,$//'`
-  for as24prod account.
+  for ajitprod account.
   We try to keep these IPs stable. They will stay stable unless there is
   justified reason for them to change.
 
 * For the Kafka broker connection string, you can either use
-  * for as24dev: `broker1.kafka.aws.ajitchahal.com:9092,broker2.kafka.aws.ajitchahal.com:9092,broker3.kafka.aws.ajitchahal.com:9092,broker4.kafka.aws.ajitchahal.com:9092,broker5.kafka.aws.ajitchahal.com:9092`
-  * for as24prod: `broker1.kafka.a.ajitchahal.com:9092,broker2.kafka.a.ajitchahal.com:9092,broker3.kafka.a.ajitchahal.com:9092,broker4.kafka.a.ajitchahal.com:9092,broker5.kafka.a.ajitchahal.com:9092`
+  * for ajitdev: `broker1.kafka.aws.ajitchahal.com:9092,broker2.kafka.aws.ajitchahal.com:9092,broker3.kafka.aws.ajitchahal.com:9092,broker4.kafka.aws.ajitchahal.com:9092,broker5.kafka.aws.ajitchahal.com:9092`
+  * for ajitprod: `broker1.kafka.a.ajitchahal.com:9092,broker2.kafka.a.ajitchahal.com:9092,broker3.kafka.a.ajitchahal.com:9092,broker4.kafka.a.ajitchahal.com:9092,broker5.kafka.a.ajitchahal.com:9092`
 * Or use the private IPs directly with
   `host kafka.aws.ajitchahal.com | awk -vORS=:9092, '{ print $4 }' | sed 's/,$//'`
-  for as24dev account, and
+  for ajitdev account, and
   `host kafka.a.ajitchahal.com | awk -vORS=:9092, '{ print $4 }' | sed 's/,$//'`
-  for as24prod account.
+  for ajitprod account.
   We try to keep these IPs stable. They will stay stable unless there is
   justified reason for them to change.
 
@@ -96,7 +96,7 @@ bin/kafka-topics.sh --delete --topic $TOPIC_NAME --zookeeper $ZOOKEEPER
   the ZooKeeper configuration. Please refrain from doing so, and stay in
   read-only mode when using the Exhibitor UI. If you have reason to depart from
   this recommendation, please get in touch with the SharedServices team via
-  e.g. [Slack](https://scout24.slack.com/messages/sharedservices/).
+  e.g. [Slack](https://ajit.slack.com/messages/sharedservices/).
 
 * ZooKeeper logs can be found in [Kibana dev](https://log2es-kibana.aws.ajitchahal.com/app/kibana#/discover/SharedServices-ZooKeeper)
 and [Kibana prod](https://log2es-kibana.a.ajitchahal.com/app/kibana#/discover/SharedServices-ZooKeeper).
@@ -120,7 +120,7 @@ and [Kibana prod](https://log2es-kibana.a.ajitchahal.com/app/kibana#/discover/Sh
 Create a three node Kafka cluster with the latest published images:
 
 ```
-aws_assume as24dev ReadOnlyAccess
+aws_assume ajitdev ReadOnlyAccess
 $(aws ecr get-login)
 ./local-cluster-up 3
 ```
@@ -193,4 +193,4 @@ You can also define the ZooKeeper image to use by setting `ZK_IMG`
 ## Owner
 
 Team owning this repository: SharedServices
-<#AS24-SharedServices-ds@scout24.com>
+<#ajit-SharedServices-ds@ajit.com>
