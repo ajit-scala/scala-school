@@ -55,6 +55,7 @@ object application extends App {
 
     def save(record: ConsumerRecord[Array[Byte], String]): Future[Done] = {
       println(s"DB.save: ${record.value}")
+      print("   " + Thread.currentThread().getId()  )
       offset.set(record.offset)
       Future.successful(Done)
     }

@@ -1,0 +1,1 @@
+(0 to 10).foreach(x=>println(x))
