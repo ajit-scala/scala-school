@@ -40,11 +40,11 @@ object application extends App {
 //
 //  }
 
-  val subscription2 = Subscriptions.topics("test")
+  val subscription2 = Subscriptions.topics("raw-listings")
 
   val done =
     Consumer.plainSource(consumerSettings, subscription2)
-      .mapAsync(1){//no. of concurrent processes to start
+      .mapAsync(4){//no. of concurrent processes to start
         db.save
       }
       .runWith(Sink.ignore)
@@ -54,7 +54,7 @@ object application extends App {
     private val offset = new AtomicLong
 
     def save(record: ConsumerRecord[Array[Byte], String]): Future[Done] = {
-      println(s"DB.save: ${record.value}")
+      println(s"DB.save: ${record.key()}")
       print("   " + Thread.currentThread().getId()  )
       offset.set(record.offset)
       Future.successful(Done)
