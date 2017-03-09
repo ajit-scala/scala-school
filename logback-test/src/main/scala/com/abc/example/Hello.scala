@@ -12,7 +12,7 @@ object Hello {
     val log1 = LoggerFactory.getLogger("myLogName")
     log.error("test 1234 78")
     log.info("test info 1234...")
-    log1.error("test 1234 567 789")
+    log1.error("test 1234 567 789",)
 
 
     val jsonLogger = LoggerFactory.getLogger("JsonLogger")

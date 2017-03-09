@@ -15,13 +15,6 @@
         </encoder>
     </appender>
 
-    <appender name="FILE_JSON_LOG" class="ch.qos.logback.core.FileAppender">
-        <file>${application.home:-.}/logs/identitylog.log</file>
-        <encoder>
-            <pattern>%m%n</pattern>
-        </encoder>
-    </appender>
-
     <appender name="ASYNCJSON" class="ch.qos.logback.classic.AsyncAppender">
         <appender-ref ref="FILE_JSON_LOG" />
     </appender>
@@ -51,9 +44,9 @@
     <logger name="com.avaje.ebeaninternal.server.lib.BackgroundThread" level="OFF" />
     <logger name="com.gargoylesoftware.htmlunit.javascript" level="OFF" />
 
-    <root level="ERROR">
-        <appender-ref ref="ASYNCFILE" />
-        <appender-ref ref="ASYNCSTDOUT" />
-    </root>
+    <!--<root level="ERROR">-->
+        <!--<appender-ref ref="ASYNCFILE" />-->
+        <!--<appender-ref ref="ASYNCSTDOUT" />-->
+    <!--</root>-->
 
 </configuration>

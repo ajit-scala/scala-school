@@ -2,6 +2,8 @@ package example;
 
 import scala.collection.JavaConverters._
 import java.net.URLDecoder
+
+import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.events.S3Event
 
 class Main {
@@ -11,5 +13,10 @@ class Main {
     val result = event.getRecords.asScala.map(record => decodeS3Key(record.getS3.getObject.getKey)).asJava
     println(result)
     return result
+  }
+  def getApiResult(request: Object , lambdaContext: Context ): String = {
+    println("from api method")
+
+    return """{"name:":"ajit"}"""
   }
 }
