@@ -18,6 +18,11 @@ libraryDependencies ++= Seq(
   "org.mockito" % "mockito-core" % "2.7.21" %  "test"
 )
 
+javaOptions in Test ++= Seq(
+  "-Dconfig.resource=test.conf",
+  "-Dlogger.resource=as24local-logger.xml"
+)
+
 // Uncomment to use Akka
 //libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.3.11"
 
