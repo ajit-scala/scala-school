@@ -1,3 +1,4 @@
+@title[Some custom label]
 # this is 1st slide
 ---
 ## this is 2nd slide
@@ -32,7 +33,7 @@ spec:
  sessionAffinity: None
  type: ClusterIP
 ```
----
++++
 ```java
 @RequestMapping(value = "/users", method = RequestMethod.GET)
     public String users() {
