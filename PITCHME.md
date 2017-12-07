@@ -3,6 +3,10 @@
 ## this is 2nd slide
 ---
 ### this is 2nd slide
+
+@fa[code-fork]
+
+## ssss @fa[bar-chart](Bar Chart)
 ---
 @[2-5]
 ```yml
