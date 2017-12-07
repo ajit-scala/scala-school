@@ -5,30 +5,56 @@
 ### this is 2nd slide
 ---
 @[2-3]
-```yaml
+```xml
 apiVersion: v1
 kind: Service
 metadata:
-  labels:
-    run: neo4j
-  name: neo4j
-  namespace: argonauts
+ labels:
+   run: neo4j
+ name: neo4j
+ namespace: argonauts
 spec:
-  ports:
-  - port: 7474
-    protocol: TCP
-    targetPort: 7474
-    name: rest
-  - port: 7687
-    protocol: TCP
-    targetPort: 7687
-    name: bolt
-  selector:
-    app: neo4j
-  sessionAffinity: None
-  type: ClusterIP
+ ports:
+ - port: 7474
+   protocol: TCP
+   targetPort: 7474
+   name: rest
+ - port: 7687
+   protocol: TCP
+   targetPort: 7687
+   name: bolt
+ selector:
+   app: neo4j
+ sessionAffinity: None
+ type: ClusterIP
 ```
 ---
+---
+@[2-5]
+```yml
+apiVersion: v1
+kind: Service
+metadata:
+ labels:
+   run: neo4j
+ name: neo4j
+ namespace: argonauts
+spec:
+ ports:
+ - port: 7474
+   protocol: TCP
+   targetPort: 7474
+   name: rest
+ - port: 7687
+   protocol: TCP
+   targetPort: 7687
+   name: bolt
+ selector:
+   app: neo4j
+ sessionAffinity: None
+ type: ClusterIP
+```
+---   
 @[2-3]
 ```java
 @RequestMapping(value = "/users", method = RequestMethod.GET)
