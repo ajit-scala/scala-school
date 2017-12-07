@@ -29,7 +29,9 @@ spec:
  type: ClusterIP
 ```
 ---   
-@[2-3]
+@[1]
+@[3]
+@[5-7]
 ```java
 @RequestMapping(value = "/users", method = RequestMethod.GET)
     public String users() {
