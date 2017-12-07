@@ -1,4 +1,4 @@
-@title[Some custom label]
+@title[Some custom label x]
 # this is 1st slide
 ---
 ## this is 2nd slide
