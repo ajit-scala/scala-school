@@ -30,7 +30,7 @@ spec:
 ```
 ---   
 @[1]
-@[3](this is cool code line)
+@[3] (this is cool code line)
 @[5-7]
 ```java
 @RequestMapping(value = "/users", method = RequestMethod.GET)
