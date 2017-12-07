@@ -32,7 +32,7 @@ spec:
  sessionAffinity: None
  type: ClusterIP
 ```
----   
+----
 ```java
 @RequestMapping(value = "/users", method = RequestMethod.GET)
     public String users() {
